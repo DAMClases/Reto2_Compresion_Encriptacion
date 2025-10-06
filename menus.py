@@ -122,7 +122,7 @@ def mostrar_menu_leer_registro()->None:
         return
     #logica de buscar en el registro...
     if not lista:
-        registro = utilidades_archivos.buscar_registro_especificado(lista, dni)
+        registro = utilidades.buscar_registro_especificado(lista, dni)
         registro = [("hola", "cristo", 23, "algo"), ("hola", "cristo", 23, "algo"), ("hola", "cristo", 23, "algo")]
         if registro:
             utilidades.mostrar_registros(registro)
@@ -137,7 +137,7 @@ def mostrar_menu_modificar_registro()->None:
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
-    utilidades_archivos.modificar_campos_registro(dni)
+    utilidades.modificar_campos_registro(dni)
     pass
 
 def mostrar_menu_eliminar_registro()->None:
@@ -146,7 +146,7 @@ def mostrar_menu_eliminar_registro()->None:
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
-    utilidades_archivos.eliminar_registro_especificado()
+    utilidades.eliminar_registro_especificado()
 
 if __name__ == '__main__':
     mostrar_menu_principal()
