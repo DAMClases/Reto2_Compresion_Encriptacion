@@ -32,19 +32,19 @@ def introducir_campo(campo:str, input_sistema:str)-> str | int | None:
         try:
             match campo:
                 case 'DNI':
-                    dni = input(COLOR_TEXTO_CIAN + {input_sistema})
+                    dni = input(COLOR_TEXTO_CIAN + input_sistema)
                     if utilidades.validar_dni(dni):
                         return dni
                 case 'nombre':
-                    nombre = input(COLOR_TEXTO_CIAN + {input_sistema})
+                    nombre = input(COLOR_TEXTO_CIAN + input_sistema)
                     if utilidades.validar_nombre(nombre):
                         return nombre
                 case 'edad':
-                    edad = int(input(COLOR_TEXTO_CIAN + {input_sistema}))
+                    edad = int(input(COLOR_TEXTO_CIAN + input_sistema))
                     if utilidades.validar_edad(edad):
                         return edad
                 case 'email':
-                    email = input(COLOR_TEXTO_CIAN + {input_sistema})
+                    email = input(COLOR_TEXTO_CIAN + input_sistema)
                     if utilidades.validar_correo(email):
                         return email
         except KeyboardInterrupt:
@@ -91,24 +91,49 @@ def mostrar_menu_principal()->None:
                 utilidades.pulsar_enter_para_continuar("\nOpción inválida. Por favor, elige un número del 1 al 5.","error")
 
 def crear_registro()->None:
-    # print(COLOR_TEXTO_AMARILLO + "Función crear_registro() aún en construcción...")
-    '''Mediante la entrada de datos de los usuarios y las validaciones pertinentes se crea un nuevo registro'''
-    #DNI
-    
+    '''Mediante la entrada de datos de los usuarios y las validaciones pertinentes se crea un nuevo registro'''    
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
+    if dni is None:
+        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+        return
     nombre = introducir_campo("nombre", "Introduzca un nombre >>> ")
+    if nombre is None:
+        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+        return
     edad = introducir_campo("edad", "Introduzca una edad acotada entre 1-99 años >>> ")
+    if edad is None:
+        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+        return
     email = introducir_campo("email", "Introduzca un email válido (Ej: jero@gmail.com / alberto@outlook.es) >>> ")
+    if email is None:
+        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+        return
     pass
     #Logica ya de creación
 def mostrar_registro()->None:
-    print(COLOR_TEXTO_AMARILLO + "Función mostrar_registro() aún en construcción...")
+    '''DNI'''
+    dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
+    if dni is None:
+        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+        return
+    #logica de mostrar registro
+    print("Aquí iría la lógica.")
 
 def modificar_registro()->None:
-    print(COLOR_TEXTO_AMARILLO + "Función modificar_registro() aún en construcción...")
+    '''Campo modificacion'''
+    dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
+    if dni is None:
+        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+        return
+    print("Aquí iría la lógica.")
 
 def eliminar_registro()->None:
-    print(COLOR_TEXTO_AMARILLO + "Función eliminar_registro() aún en construcción...")
+    '''Eliminar, DNI'''
+    dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
+    if dni is None:
+        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+        return
+    print("Aquí iría la lógica.")
 
 if __name__ == '__main__':
     mostrar_menu_principal()
