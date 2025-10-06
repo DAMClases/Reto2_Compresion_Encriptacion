@@ -29,14 +29,14 @@ def validar_nombre(nombre:str)->bool:
     '''Función de validación de nombre'''
     if nombre:
         if len(nombre)>50:
-            print("La longitud del nombre no puede ser mayor a 50.")
+            pulsar_enter_para_continuar("La longitud del nombre no puede ser mayor a 50.", "advertencia")
             return False
         nombre = nombre.strip(" ")
         if nombre.isalpha():
             return True
-        print('No se permiten caracteres numéricos')
+        pulsar_enter_para_continuar("No se permiten caracteres numéricos.", "advertencia")
         return False
-    print("El nombre no puede estar vacío.")
+    pulsar_enter_para_continuar("El nombre no puede estar vacío.", "advertencia")
     return False
 
 def validar_dni(dni:str)->tuple[bool,bool]:
@@ -97,20 +97,22 @@ def validar_edad(edad:int)->bool:
     '''Función que valida la edad. Devuelve un valor booleano.'''
     try:
         if edad > 99 or edad < 1:
-            print("La edad debe estar comprendida entre 1-99 años.")
+            pulsar_enter_para_continuar("La edad debe estar comprendida entre 1-99 años.", "advertencia")
             return False
         return True
     except:
-        print("La edad debe ser un número entero.")
+        pulsar_enter_para_continuar("La edad debe ser un número entero.", "error")
         return False
 
 def validar_correo(email:str)->bool:
     '''Función que valida el correo electrónico. Devuelve un valor booleano.'''
     if len(email) > 100:
+        pulsar_enter_para_continuar("La longitud del email no puede ser superior a 100 caracteres.", "advertencia")    
         return False
     
     partes = email.split('@')
     if len(partes) != 2:
+        pulsar_enter_para_continuar("Un email válido debe tener una parte reservada para el usuario y otra para el dominio.", "advertencia")    
         return False
    
     nombre_usuario, dominio_completo = partes
@@ -119,21 +121,25 @@ def validar_correo(email:str)->bool:
     # Validar nombre de usuario
     caracteres_validos = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-"
     if nombre_usuario[0] == '.' or nombre_usuario[-1] == '.' or '..' in nombre_usuario:
+        pulsar_enter_para_continuar("Caracteres inválidos al inicio, final o doble uso del caracter '.'.", "advertencia")    
         return False
 
 
     for i in range(len(nombre_usuario)):
         if nombre_usuario[i] not in caracteres_validos:
+            pulsar_enter_para_continuar("Caracteres inválidos detectados.", "advertencia")    
             return False
         if nombre_usuario[i] in "._-" and (i == len(nombre_usuario) - 1 or nombre_usuario[i + 1] in "._-"):
-            return False
+            pulsar_enter_para_continuar("Caracteres inválidos detectados.", "advertencia")    
    
     # Validar dominio
     if len(dominio_partes) < 2:
+        pulsar_enter_para_continuar("Un email válido debe tener una parte reservada para el usuario y otra para el dominio.", "advertencia")    
         return False
    
     for parte in dominio_partes:
         if not parte or parte[0] == '-' or parte[-1] == '-' or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-" for c in parte):
+            pulsar_enter_para_continuar("Caracteres inválidos detectados.", "advertencia")    
             return False
     # Validar extensión
     extension = dominio_partes[-1]

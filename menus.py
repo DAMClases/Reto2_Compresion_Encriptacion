@@ -25,7 +25,31 @@ COLOR_TEXTO_MAGENTA = Fore.MAGENTA
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
 #                       Funciones                           #
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - ### 
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
+def introducir_campo(campo:str, input_sistema:str)-> str | int | None:
+    '''Función que recoge y valida la entrada de datos del usuario.'''
+    while True:
+        try:
+            match campo:
+                case 'DNI':
+                    dni = input(COLOR_TEXTO_CIAN + {input_sistema})
+                    if utilidades.validar_dni(dni):
+                        return dni
+                case 'nombre':
+                    nombre = input(COLOR_TEXTO_CIAN + {input_sistema})
+                    if utilidades.validar_nombre(nombre):
+                        return nombre
+                case 'edad':
+                    edad = int(input(COLOR_TEXTO_CIAN + {input_sistema}))
+                    if utilidades.validar_edad(edad):
+                        return edad
+                case 'email':
+                    email = input(COLOR_TEXTO_CIAN + {input_sistema})
+                    if utilidades.validar_correo(email):
+                        return email
+        except KeyboardInterrupt:
+            return None
+                
 def mostrar_menu_principal()->None:
     '''Despliega el menú principal con un diseño intuitivo en consola'''
 
@@ -67,8 +91,16 @@ def mostrar_menu_principal()->None:
                 utilidades.pulsar_enter_para_continuar("\nOpción inválida. Por favor, elige un número del 1 al 5.","error")
 
 def crear_registro()->None:
-    print(COLOR_TEXTO_AMARILLO + "Función crear_registro() aún en construcción...")
-
+    # print(COLOR_TEXTO_AMARILLO + "Función crear_registro() aún en construcción...")
+    '''Mediante la entrada de datos de los usuarios y las validaciones pertinentes se crea un nuevo registro'''
+    #DNI
+    
+    dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
+    nombre = introducir_campo("nombre", "Introduzca un nombre >>> ")
+    edad = introducir_campo("edad", "Introduzca una edad acotada entre 1-99 años >>> ")
+    email = introducir_campo("email", "Introduzca un email válido (Ej: jero@gmail.com / alberto@outlook.es) >>> ")
+    pass
+    #Logica ya de creación
 def mostrar_registro()->None:
     print(COLOR_TEXTO_AMARILLO + "Función mostrar_registro() aún en construcción...")
 
