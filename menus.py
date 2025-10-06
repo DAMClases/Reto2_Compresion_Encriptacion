@@ -6,6 +6,7 @@ from colorama import Fore, Back, Style, init
 import os
 import gzip
 import cryptography
+import utilidades
 
 #para el apartado gráfico debemos inicializar siempre colorama
 init(autoreset=True)
@@ -13,12 +14,6 @@ init(autoreset=True)
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
 #                       Funciones                           #
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ### 
-
-def pulsar_enter_continuar()->None:
-    '''Limpia la consola para mayor legibilidad'''
-    encuadre_verde = Fore.LIGHTGREEN_EX
-    input(encuadre_verde + "\nPresiona ENTER para continuar...")
-    os.system('cls')
 
 def mostrar_menu_principal()->None:
     '''Despliega el menú principal con un diseño intuitivo en consola'''
@@ -53,25 +48,20 @@ def mostrar_menu_principal()->None:
             case '1':
                 print(encuadre_verde + "\nCrear registro seleccionado ")
                 crear_registro()
-                pulsar_enter_continuar()
             case '2':
                 print(encuadre_verde + "\nLeer registro seleccionado ")
                 mostrar_registro()
-                pulsar_enter_continuar()
             case '3':
                 print(encuadre_verde + "\nModificar registro seleccionado ")
                 modificar_registro()
-                pulsar_enter_continuar()
             case '4':
                 print(Fore.RED + "\nEliminar registro seleccionado ")
                 eliminar_registro()
-                pulsar_enter_continuar()
             case '5':
                 print(encuadre_magenta + "\nFinalizando sesión... ¡Hasta pronto!")
                 exit()
             case _:
-                print(encuadre_rojo + "\nOpción inválida. Por favor, elige un número del 1 al 5.")
-                pulsar_enter_continuar()
+                utilidades.pulsar_enter_para_continuar("\nOpción inválida. Por favor, elige un número del 1 al 5.","error")
 
 def crear_registro()->None:
     encuadre_amarillo = Fore.YELLOW
