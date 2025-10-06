@@ -7,6 +7,7 @@ import os
 import gzip
 import cryptography
 import utilidades
+import utilidades_archivos
 
 #para el apartado gráfico debemos inicializar siempre colorama
 init(autoreset=True)
@@ -50,6 +51,8 @@ def introducir_campo(campo:str, input_sistema:str)-> str | int | None:
                     email = input(COLOR_TEXTO_CIAN + input_sistema)
                     if utilidades.validar_correo(email):
                         return email
+                case _:
+                    utilidades.pulsar_enter_para_continuar("", "normal")                    
         except KeyboardInterrupt:
             return None
                 
@@ -107,24 +110,32 @@ def crear_registro()->None:
     if email is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
-    pass
+    # estructura_de_datos = utilidades_archivos.packRecord(dni, nombre, edad, email)
     #Logica ya de creación
+
 def mostrar_registro()->None:
-    '''DNI'''
+    '''Dada una estructura de datos previamente cargada y un DNI se debe filtrar su registro.'''
+    lista=[]
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
-    #logica de mostrar registro
-    print("Aquí iría la lógica.")
+    #logica de buscar en el registro...
+    if lista:
+        utilidades_archivos.buscar_registro_especificado(lista, dni)
+        return
+    utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún." "advertencia")
+    return
 
 def modificar_registro()->None:
     '''Campo modificacion'''
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
+    
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
-    print("Aquí iría la lógica.")
+    utilidades_archivos.modificar_campos_registro(dni)
+    pass
 
 def eliminar_registro()->None:
     '''Eliminar, DNI'''
