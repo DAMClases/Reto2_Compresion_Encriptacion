@@ -12,8 +12,9 @@ import utilidades
 init(autoreset=True)
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
-#                       Funciones                           #
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - ### 
+#  Constantes que intervienen en el diseño de la aplicación #
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###    
+
 COLOR_FONDO_AZUL = Back.BLUE
 COLOR_TEXTO_AMARILLO = Fore.YELLOW
 COLOR_TEXTO_BLANCO = Fore.WHITE
@@ -21,11 +22,13 @@ COLOR_TEXTO_CIAN = Fore.CYAN
 COLOR_TEXTO_VERDE = Fore.GREEN
 COLOR_TEXTO_ROJO = Fore.RED
 COLOR_TEXTO_MAGENTA = Fore.MAGENTA
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
+#                       Funciones                           #
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - ### 
 def mostrar_menu_principal()->None:
     '''Despliega el menú principal con un diseño intuitivo en consola'''
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
-#  Variables que intervienen en el diseño de la aplicación  #
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###    
+
     
     
 
