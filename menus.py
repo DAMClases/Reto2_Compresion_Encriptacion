@@ -143,7 +143,7 @@ def eliminar_registro()->None:
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
-    print("Aquí iría la lógica.")
+    utilidades_archivos.eliminar_registro_especificado()
 
 if __name__ == '__main__':
     mostrar_menu_principal()
