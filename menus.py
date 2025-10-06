@@ -32,17 +32,20 @@ def introducir_campo(campo:str, input_sistema:str)-> str | int | None:
         try:
             match campo:
                 case 'DNI':
-                    dni = input(COLOR_TEXTO_CIAN + input_sistema)
-                    if utilidades.validar_dni(dni):
+                    dni = input(COLOR_TEXTO_CIAN + input_sistema).upper()
+                    if utilidades.validar_dni(dni)[0]:
                         return dni
                 case 'nombre':
                     nombre = input(COLOR_TEXTO_CIAN + input_sistema)
                     if utilidades.validar_nombre(nombre):
                         return nombre
                 case 'edad':
-                    edad = int(input(COLOR_TEXTO_CIAN + input_sistema))
-                    if utilidades.validar_edad(edad):
-                        return edad
+                    try:
+                        edad = int(input(COLOR_TEXTO_CIAN + input_sistema))
+                        if utilidades.validar_edad(edad):
+                            return edad
+                    except ValueError:
+                        utilidades.pulsar_enter_para_continuar("El dato introducido debe ser obligatoriamente numérico de tipo entero.", "error")                    
                 case 'email':
                     email = input(COLOR_TEXTO_CIAN + input_sistema)
                     if utilidades.validar_correo(email):
@@ -52,10 +55,6 @@ def introducir_campo(campo:str, input_sistema:str)-> str | int | None:
                 
 def mostrar_menu_principal()->None:
     '''Despliega el menú principal con un diseño intuitivo en consola'''
-
-    
-    
-
     while True:
         os.system('cls') #limpiamos de forma básica la pantalla, sin necesidad de input
         print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + "═" * 50)

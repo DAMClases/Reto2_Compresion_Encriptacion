@@ -1,5 +1,6 @@
 from colorama import Fore, init
 import os
+import re
 
 init(autoreset=True)
 
@@ -25,18 +26,24 @@ def limpiar_consola():
     '''Función para limpiar consola y blablabla'''
     os.system("cls" if os.name == 'nt' else "clear")
 
-def validar_nombre(nombre:str)->bool:
-    '''Función de validación de nombre'''
-    if nombre:
-        if len(nombre)>50:
-            pulsar_enter_para_continuar("La longitud del nombre no puede ser mayor a 50.", "advertencia")
-            return False
-        nombre = nombre.strip(" ")
-        if nombre.isalpha():
-            return True
-        pulsar_enter_para_continuar("No se permiten caracteres numéricos.", "advertencia")
+def validar_nombre(nombre: str) -> bool:
+    '''Función de validación de un nombre:
+        1. Valida si está vacío.
+        2. Si su longitud es menor a 50 caracteres.
+        3. Si se han usado caracteres numéricos o especiales.
+        4. Si la composición de la cadena coincide con la regex.'''
+    if not nombre:
+        pulsar_enter_para_continuar("El nombre no puede estar vacío.", "advertencia")
         return False
-    pulsar_enter_para_continuar("El nombre no puede estar vacío.", "advertencia")
+    nombre = nombre.strip()
+    if len(nombre) > 50:
+        pulsar_enter_para_continuar("La longitud del nombre no puede ser mayor a 50.", "advertencia")
+        return False
+    
+    patron = r"^[A-Za-zÁÉÍÓÚáéíóúÑñ\s'-]+$" #Comentario: Regex que acepta letras, espacios, guiones y apóstrofes, ya que pueden haber nombres compuestos o extranjeros
+    if re.match(patron, nombre):
+        return True
+    pulsar_enter_para_continuar("No se permiten caracteres numéricos o especiales.", "advertencia")
     return False
 
 def validar_dni(dni:str)->tuple[bool,bool]:
@@ -51,15 +58,13 @@ def validar_dni(dni:str)->tuple[bool,bool]:
     if len(dni) == 9 and dni[0].upper() in LETRAS_CIF:
         if(((dni[0].isalpha()) and dni[1:-1].isdigit())):
             cif = dni.upper().strip()
-
-
             if len(cif) != 9 or not cif[1:8].isdigit():
-                return False
-           
+                pulsar_enter_para_continuar("Formato incorrecto: el CIF debe tener 1 letra inicial, 7 dígitos y 1 carácter de control.", "advertencia")
+                return (False, False)
+
             letra = cif[0]
             numeros = list(map(int, cif[1:8]))
             control = cif[8]
-
 
             #Cálculo del dígito de control
             suma_pares = sum(numeros[1::2])
@@ -70,27 +75,43 @@ def validar_dni(dni:str)->tuple[bool,bool]:
             digito_control = (10 - (total % 10)) % 10
             #Dependiendo del tipo de entidad, el control puede ser número o letra
             if letra in "PQRSNW":
-                return (control == LETRAS_CONTROL[digito_control], False)
+                if control != LETRAS_CONTROL[digito_control]:
+                    pulsar_enter_para_continuar("El CIF no es válido: letra de control incorrecta.", "advertencia")
+                    return (False, False)
+                return (True, False)
             elif letra in "ABEH":
-                return (control == str(digito_control), False)
+                if control != str(digito_control):
+                    pulsar_enter_para_continuar("El CIF no es válido: dígito de control incorrecto.", "advertencia")
+                    return (False, False)
+                return (True, False)
             else:
-                return ((control == str(digito_control) or control == LETRAS_CONTROL[digito_control]), False)  # Ambos posibles
+                if control != str(digito_control) and control != LETRAS_CONTROL[digito_control]:
+                    pulsar_enter_para_continuar("El CIF no es válido: carácter de control incorrecto.", "advertencia")
+                    return (False, False)
+                return (True, False)
         else:
+            pulsar_enter_para_continuar("Formato incorrecto: el CIF debe comenzar con una letra válida y contener solo números después.", "advertencia")
             return (False, False)
-   
     elif len(dni) == 9 and dni[-1].isalpha():
         #Validación de NIE
         if((dni[0].upper() in LETRAS_NIE) and dni[1:-1].isdigit()):
             combinado = int(str(LETRAS_NIE.index(dni[0])) + dni[1:-1])
             if (dni[-1] == LETRAS_NIF[(combinado%23)]):
                 return (True, True)
+            pulsar_enter_para_continuar("El NIE no es válido: letra de control incorrecta.", "advertencia")
+            return (False, False)
         #Validación de NIF
         elif (dni[:-1].isdigit()):
             if dni[-1] == LETRAS_NIF[(int(dni[:-1]) % 23)]:
                 return (True, True)
-        else:
+            pulsar_enter_para_continuar("El DNI no es válido: letra de control incorrecta.", "advertencia")
             return (False, False)
+        else:
+            pulsar_enter_para_continuar("Formato incorrecto: el DNI/NIE debe tener 8 dígitos y una letra final.", "advertencia")
+            return (False, False)
+    pulsar_enter_para_continuar("Formato no reconocido: el valor introducido no parece ser un DNI, NIE o CIF válido.", "advertencia")
     return (False, False)
+
 
 
 def validar_edad(edad:int)->bool:
