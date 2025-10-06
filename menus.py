@@ -76,23 +76,23 @@ def mostrar_menu_principal()->None:
         match opcion:
             case '1':
                 print(COLOR_TEXTO_VERDE + "\nCrear registro seleccionado ")
-                crear_registro()
+                mostrar_menu_crear_registro()
             case '2':
                 print(COLOR_TEXTO_VERDE + "\nLeer registro seleccionado ")
-                mostrar_registro()
+                mostrar_menu_leer_registro()
             case '3':
                 print(COLOR_TEXTO_VERDE + "\nModificar registro seleccionado ")
-                modificar_registro()
+                mostrar_menu_modificar_registro()
             case '4':
                 print(COLOR_TEXTO_ROJO + "\nEliminar registro seleccionado ")
-                eliminar_registro()
+                mostrar_menu_eliminar_registro()
             case '5':
                 print(COLOR_TEXTO_MAGENTA + "\nFinalizando sesión... ¡Hasta pronto!")
                 exit()
             case _:
                 utilidades.pulsar_enter_para_continuar("\nOpción inválida. Por favor, elige un número del 1 al 5.","error")
 
-def crear_registro()->None:
+def mostrar_menu_crear_registro()->None:
     '''Mediante la entrada de datos de los usuarios y las validaciones pertinentes se crea un nuevo registro'''    
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
     if dni is None:
@@ -113,7 +113,7 @@ def crear_registro()->None:
     # estructura_de_datos = utilidades_archivos.packRecord(dni, nombre, edad, email)
     #Logica ya de creación
 
-def mostrar_registro()->None:
+def mostrar_menu_leer_registro()->None:
     '''Dada una estructura de datos previamente cargada y un DNI se debe filtrar su registro.'''
     lista=[]
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
@@ -121,13 +121,16 @@ def mostrar_registro()->None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
     #logica de buscar en el registro...
-    if lista:
-        utilidades_archivos.buscar_registro_especificado(lista, dni)
-        return
+    if not lista:
+        registro = utilidades_archivos.buscar_registro_especificado(lista, dni)
+        registro = [("hola", "cristo", 23, "algo"), ("hola", "cristo", 23, "algo"), ("hola", "cristo", 23, "algo")]
+        if registro:
+            utilidades.mostrar_registros(registro)
+
     utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún." "advertencia")
     return
 
-def modificar_registro()->None:
+def mostrar_menu_modificar_registro()->None:
     '''Campo modificacion'''
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
     
@@ -137,7 +140,7 @@ def modificar_registro()->None:
     utilidades_archivos.modificar_campos_registro(dni)
     pass
 
-def eliminar_registro()->None:
+def mostrar_menu_eliminar_registro()->None:
     '''Eliminar, DNI'''
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
     if dni is None:

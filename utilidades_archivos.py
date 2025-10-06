@@ -108,23 +108,14 @@ def decryptBytes(byts:bytes, password:str) -> bytes:
 
 def buscar_registro_especificado(estructura_datos:list[tuple[str,str,int,str]], dni:int)->None:
     """Muestra los registros introducidos en formato tabla"""
-    #suponiendo que tenemos una estructura y un registro
-    print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
-    print(f"|{'ID'.center(10)}|{'Nombre'.center(20)}|{'Edad'.center(6)}|{'Correo electrónico'.center(30)}|")
-    print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
     for registro in estructura_datos:
         for subelemento in registro:
             if subelemento[0] == dni:
-                print (f"|{subelemento[0]:10d}|{subelemento[1].ljust(20)}|{subelemento[2]:6d}|{subelemento[3].ljust(30)}|")
-                utilidades.pulsar_enter_para_continuar("Fin del registro.", "normal") 
-    print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
+                return subelemento
+    return None
 
 def modificar_campos_registro(estructura_datos:list[tuple[str,str,int,str]], dni:int)->None:
     """Muestra los registros introducidos en formato tabla"""
-    #suponiendo que tenemos una estructura y un registro
-    print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
-    print(f"|{'ID'.center(10)}|{'Nombre'.center(20)}|{'Edad'.center(6)}|{'Correo electrónico'.center(30)}|")
-    print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
     for registro in estructura_datos:
         for subelemento in registro:
             if subelemento[0] == dni:
@@ -139,7 +130,6 @@ def modificar_campos_registro(estructura_datos:list[tuple[str,str,int,str]], dni
                                     nuevo_nombre = modificar_campo_nombre()
                                     nueva_edad = modificar_campo_edad()
                                     nuevo_correo = modificar_campo_correo()
-
                             case 'N':
                                 utilidades.pulsar_enter_para_continuar("Cancelando operación.", "normal")
                                 return None
@@ -148,7 +138,6 @@ def modificar_campos_registro(estructura_datos:list[tuple[str,str,int,str]], dni
                     except KeyboardInterrupt:
                         utilidades.pulsar_enter_para_continuar("Operación cancelada.", "normal")
     print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
-
 def eliminar_registro_especificado(estructura_datos:list[tuple[str,str,int,str]], dni:int)->None:
     """Elimina un registro específico de entre los registros actuales"""
     #suponiendo que tenemos una estructura y un registro
