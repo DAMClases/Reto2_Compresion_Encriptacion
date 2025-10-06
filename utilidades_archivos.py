@@ -9,8 +9,6 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import utilidades
 import colorama
 
-COLOR_LETRA_CYAN = colorama.Fore.CYAN
-COLOR_LETRA_AMARILLO = colorama.Fore.YELLOW
 ## ID, nombre, edad y correo electrónico
 
 def packRecord(id:str, name:str, age:int, email:str) -> bytes | None:
@@ -106,72 +104,3 @@ def decryptBytes(byts:bytes, password:str) -> bytes:
         print("Error al desencriptar")
         return None
 
-def buscar_registro_especificado(estructura_datos:list[tuple[str,str,int,str]], dni:int)->None:
-    """Muestra los registros introducidos en formato tabla"""
-    for registro in estructura_datos:
-        for subelemento in registro:
-            if subelemento[0] == dni:
-                return subelemento
-    return None
-
-def modificar_campos_registro(estructura_datos:list[tuple[str,str,int,str]], dni:int)->None:
-    """Muestra los registros introducidos en formato tabla"""
-    for registro in estructura_datos:
-        for subelemento in registro:
-            if subelemento[0] == dni:
-                print (f"|{subelemento[0]:10d}|{subelemento[1].ljust(20)}|{subelemento[2]:6d}|{subelemento[3].ljust(30)}|")
-                while True:
-                    try:
-                        modificar = input(COLOR_LETRA_CYAN + "¿Desea modificar el registro? [S]|[N] >>> ").upper()
-                        match modificar:
-                            case 'S':
-                                while True:
-                                    nuevo_dni = modificar_campo_dni()
-                                    nuevo_nombre = modificar_campo_nombre()
-                                    nueva_edad = modificar_campo_edad()
-                                    nuevo_correo = modificar_campo_correo()
-                            case 'N':
-                                utilidades.pulsar_enter_para_continuar("Cancelando operación.", "normal")
-                                return None
-                            case _:
-                                print(COLOR_LETRA_AMARILLO + "Debe seleccionar entre [S]|[N].")
-                    except KeyboardInterrupt:
-                        utilidades.pulsar_enter_para_continuar("Operación cancelada.", "normal")
-    print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
-def eliminar_registro_especificado(estructura_datos:list[tuple[str,str,int,str]], dni:int)->None:
-    """Elimina un registro específico de entre los registros actuales"""
-    #suponiendo que tenemos una estructura y un registro
-    print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
-    print(f"|{'ID'.center(10)}|{'Nombre'.center(20)}|{'Edad'.center(6)}|{'Correo electrónico'.center(30)}|")
-    print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
-    for registro in estructura_datos:
-        for subelemento in registro:
-            if subelemento[0] == dni:
-                print (f"|{subelemento[0]:10d}|{subelemento[1].ljust(20)}|{subelemento[2]:6d}|{subelemento[3].ljust(30)}|")
-                while True:
-                    eliminar = input(COLOR_LETRA_CYAN + "¿Desea eliminar este fichero? [S]|[N] >>> ").upper()
-                    match eliminar:
-                        case 'S':
-                            registro.remove(subelemento)
-                            # encryptBytes(subelemento[0])
-                            # zipBytes()
-                            #
-                            pass
-                        case 'N':
-                            utilidades.pulsar_enter_para_continuar("Cancelando operación.", "normal")
-                            return
-                        case _:
-                            print(COLOR_LETRA_CYAN + "Debe seleccionar entre [S]|[N].")
-        print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
-
-def modificar_campo_correo():
-    pass
-
-def modificar_campo_dni():
-    pass
-
-def modificar_campo_nombre():
-    pass
-
-def modificar_campo_edad():
-    pass
