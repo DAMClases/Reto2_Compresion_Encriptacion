@@ -6,101 +6,133 @@ import menus
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-import utilidades
-import colorama
 
-## ID, nombre, edad y correo electrónico
+# Formato binario fijo: ID(10s), nombre(50s), edad(h), email(100s)
+CONFIGURACION_PAQUETES = '10s50sh100s'
+TAMAÑO_REGISTRO = struct.calcsize(CONFIGURACION_PAQUETES)
 
-def packRecord(id:str, name:str, age:int, email:str) -> bytes | None:
-    """Empaqueta los datos en un formato binario"""
+# Parámetros KDF
+SALT_BYTES = 16
+ITERACIONES = 200_000
+
+def generar_key(password: str, salt: bytes) -> bytes:
+    """Deriva una clave Fernet (base64 urlsafe) a partir de password+salt."""
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=ITERACIONES,
+    )
+    key = kdf.derive(password.encode('utf-8'))
+    return base64.urlsafe_b64encode(key)
+
+# ------------------------
+# Empaquetado de registros
+# ------------------------
+
+def empaquetar_registro(id: str, name: str, age: int, email: str) -> bytes:
+    """Empaqueta los datos en un formato binario fijo."""
     try:
-        paquete = struct.pack('10s50sH100s', id.encode('utf-8'), name.encode('utf-8'), age, email.encode('utf-8'))
+        return struct.pack(
+            CONFIGURACION_PAQUETES,
+            id.encode('utf-8'),
+            name.encode('utf-8'),
+            age,
+            email.encode('utf-8')
+        )
     except struct.error as e:
         print(f"Error al empaquetar los datos: {e}")
+        return None
     except Exception as e:
         print(f"Error inesperado al empaquetar los datos: {e}")
-    else:
-        return paquete
-    return None
+        return None
 
-def unpackRecord(record_bytes) -> tuple[int, str, int, str]: #corregir lo que realmente devuelve, id es un dni y está formateado en string
-    """Desempaqueta los datos desde un formato binario"""
+def desempaquetar_registro(record_bytes: bytes) -> tuple[str, str, int, str]:
+    """Desempaqueta un registro binario a tupla tipada."""
     try:
-        id, name, age, email = struct.unpack('10s50sH100s', record_bytes)
-    except Exception as e:
-        print(f"Error inesperado al desempaquetar los datos: {e}")
+        id_b, name_b, age, email_b = struct.unpack(CONFIGURACION_PAQUETES, record_bytes)
+        return (
+            id_b.decode('utf-8').rstrip('\x00'),
+            name_b.decode('utf-8').rstrip('\x00'),
+            age,
+            email_b.decode('utf-8').rstrip('\x00')
+        )
     except struct.error as e:
         print(f"Error al desempaquetar los datos: {e}")
-    else:
-        return id.decode('utf-8').rstrip('\x00'), name.decode('utf-8').rstrip('\x00'), age, email.decode('utf-8').rstrip('\x00')
-    return None
+        return None
+    except Exception as e:
+        print(f"Error inesperado al desempaquetar los datos: {e}")
+        return None
 
-def zipBytes(byts:bytes) -> bytes | None:
+# ------------
+# Compresión
+# ------------
+
+def comprimir_bytes(bytes: bytes) -> bytes:
     try:
-        if not byts:
-            raise ValueError("Los datos a comprimir no pueden estar vacíos.")
-        if not isinstance(byts, bytes):
-            raise TypeError("Los datos a comprimir deben ser de tipo bytes.")
-        return zlib.compress(byts, level=9)
+        if not isinstance(bytes, bytes) or not bytes:
+            raise ValueError("Los datos a comprimir deben ser bytes y no vacíos.")
+        return zlib.compress(bytes, level=9)
     except Exception as e:
         print(f"Error al comprimir los datos: {e}")
         return None
 
-def unzipBytes(byts:bytes) -> bytes:
-    """This function decompresses bytes using zlib."""
+def descomprimir_bytes(bytes: bytes) -> bytes:
+    """Descomprime bytes con zlib."""
     try:
-        if not byts:
-            raise ValueError("Los datos a descomprimir no pueden estar vacíos.")
-        if not isinstance(byts, bytes):
-            raise TypeError("Los datos a descomprimir deben ser de tipo bytes.")
-        return zlib.decompress(byts)
+        if not isinstance(bytes, bytes) or not bytes:
+            raise ValueError("Los datos a descomprimir deben ser bytes y no vacíos.")
+        return zlib.decompress(bytes)
     except Exception as e:
         print(f"Error al descomprimir los datos: {e}")
         return None
 
-def encryptBytes(byts:bytes, password:str) -> bytes:
-    """This function encrypts bytes using a password and a randomly generated salt."""
+# ------------
+# Criptografía
+# ------------
+
+def encriptar_bytes(bytes: bytes, password: str) -> bytes:
+    """
+    Cifra bytes con contraseña:
+    - Genera salt aleatorio (16B)
+    - Deriva clave Fernet con PBKDF2-HMAC-SHA256
+    - Devuelve: salt + token_fernet
+    """
     try:
-        if not byts:
-            raise ValueError("Los datos a encriptar no pueden estar vacíos.")
-        if not isinstance(byts, bytes):
-            raise TypeError("Los datos a encriptar deben ser de tipo bytes.")
-        salt = os.urandom(16)
-        # Derive the key from the password and salt
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=salt,
-            iterations=1_200_000,
-        )
-        key = base64.urlsafe_b64encode(kdf.derive(password.encode("utf-8")))
+        if not isinstance(bytes, bytes) or not bytes:
+            raise ValueError("Los datos a encriptar deben ser bytes y no vacíos.")
+        salt = os.urandom(SALT_BYTES)
+        key = generar_key(password, salt)
         f = Fernet(key)
-        with open("./salt.key", "wb") as file:
-            file.write(salt)
-        return f.encrypt(byts)
+        token = f.encrypt(bytes)
+        return salt + token
     except Exception as e:
         print(f"Error al encriptar los datos: {e}")
         return None
 
-def decryptBytes(byts:bytes, password:str) -> bytes:
-    """This function decrypts bytes using a password and a stored salt."""
+def desencriptar_bytes(bytes: bytes, password: str) -> bytes:
+    """
+    Descifra bytes con contraseña:
+    - Extrae salt (16B) del inicio
+    - Deriva clave y descifra token Fernet
+    """
     try:
-        with open ("./salt.key", "rb") as file:
-            salt = file.read()
-        # Derive the key from the password and salt
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=salt,
-            iterations=1_200_000,
-        )
-        key = base64.urlsafe_b64encode(kdf.derive(password.encode("utf-8")))
+        if not isinstance(bytes, bytes) or len(bytes) <= SALT_BYTES:
+            raise ValueError("Blob inválido: faltan datos/salt.")
+        salt, token = bytes[:SALT_BYTES], bytes[SALT_BYTES:]
+        key = generar_key(password, salt)
         f = Fernet(key)
-        return f.decrypt(byts)
+        return f.decrypt(token)
     except InvalidToken:
-        print("Contraseña incorrecta")
+        print("Contraseña incorrecta o datos corruptos")
         return None
-    except FileNotFoundError:
-        print("Error al desencriptar")
+    except Exception as e:
+        print(f"Error al desencriptar: {e}")
         return None
 
+# -----------------------------
+# Utilidades de “record stream”
+# -----------------------------
+
+def record_size() -> int:
+    return TAMAÑO_REGISTRO
