@@ -8,6 +8,7 @@ import gzip
 import cryptography
 import utilidades
 import utilidades_archivos
+import gestion_archivos
 
 #para el apartado gráfico debemos inicializar siempre colorama
 init(autoreset=True)
@@ -132,13 +133,16 @@ def mostrar_menu_leer_registro()->None:
 
 def mostrar_menu_modificar_registro()->None:
     '''Campo modificacion'''
-    dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
+    # dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
     
-    if dni is None:
-        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
-        return
-    utilidades.modificar_campos_registro(dni)
-    pass
+    # if dni is None:
+    #     utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+    #     return
+    # utilidades.modificar_campos_registro(dni)
+    gestion_archivos.escribir_archivo(("21137083Z", "Angel Melchor", 23, "melchor@algo.pro"), "mi_contraseña_segura")
+    registros = gestion_archivos.leer_archivo("mi_contraseña_segura")
+    utilidades.mostrar_registros(registros)
+    utilidades.pulsar_enter_para_continuar("")
 
 def mostrar_menu_eliminar_registro()->None:
     '''Eliminar, DNI'''
