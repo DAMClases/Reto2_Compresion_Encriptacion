@@ -68,21 +68,21 @@ def desempaquetar_registro(record_bytes: bytes) -> tuple[str, str, int, str]:
 # Compresión
 # ------------
 
-def comprimir_bytes(bytes: bytes) -> bytes:
+def comprimir_bytes(input_bytes: bytes) -> bytes:
     try:
-        if not isinstance(bytes, bytes) or not bytes:
+        if not isinstance(input_bytes, bytes) or not input_bytes:
             raise ValueError("Los datos a comprimir deben ser bytes y no vacíos.")
-        return zlib.compress(bytes, level=9)
+        return zlib.compress(input_bytes, level=9)
     except Exception as e:
         print(f"Error al comprimir los datos: {e}")
         return None
 
-def descomprimir_bytes(bytes: bytes) -> bytes:
+def descomprimir_bytes(input_bytes: bytes) -> bytes:
     """Descomprime bytes con zlib."""
     try:
-        if not isinstance(bytes, bytes) or not bytes:
+        if not isinstance(input_bytes, bytes) or not input_bytes:
             raise ValueError("Los datos a descomprimir deben ser bytes y no vacíos.")
-        return zlib.decompress(bytes)
+        return zlib.decompress(input_bytes)
     except Exception as e:
         print(f"Error al descomprimir los datos: {e}")
         return None
@@ -91,7 +91,7 @@ def descomprimir_bytes(bytes: bytes) -> bytes:
 # Criptografía
 # ------------
 
-def encriptar_bytes(bytes: bytes, password: str) -> bytes:
+def encriptar_bytes(input_bytes: bytes, password: str) -> bytes:
     """
     Cifra bytes con contraseña:
     - Genera salt aleatorio (16B)
@@ -99,27 +99,27 @@ def encriptar_bytes(bytes: bytes, password: str) -> bytes:
     - Devuelve: salt + token_fernet
     """
     try:
-        if not isinstance(bytes, bytes) or not bytes:
+        if not isinstance(input_bytes, bytes) or not input_bytes:
             raise ValueError("Los datos a encriptar deben ser bytes y no vacíos.")
         salt = os.urandom(SALT_BYTES)
         key = generar_key(password, salt)
         f = Fernet(key)
-        token = f.encrypt(bytes)
+        token = f.encrypt(input_bytes)
         return salt + token
     except Exception as e:
         print(f"Error al encriptar los datos: {e}")
         return None
 
-def desencriptar_bytes(bytes: bytes, password: str) -> bytes:
+def desencriptar_bytes(input_bytes: bytes, password: str) -> bytes:
     """
     Descifra bytes con contraseña:
     - Extrae salt (16B) del inicio
     - Deriva clave y descifra token Fernet
     """
     try:
-        if not isinstance(bytes, bytes) or len(bytes) <= SALT_BYTES:
+        if not isinstance(input_bytes, bytes) or len(input_bytes) <= SALT_BYTES:
             raise ValueError("Blob inválido: faltan datos/salt.")
-        salt, token = bytes[:SALT_BYTES], bytes[SALT_BYTES:]
+        salt, token = input_bytes[:SALT_BYTES], input_bytes[SALT_BYTES:]
         key = generar_key(password, salt)
         f = Fernet(key)
         return f.decrypt(token)
