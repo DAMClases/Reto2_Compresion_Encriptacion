@@ -111,24 +111,34 @@ def mostrar_menu_crear_registro()->None:
     if email is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
-    # estructura_de_datos = utilidades_archivos.packRecord(dni, nombre, edad, email)
-    #Logica ya de creación
+    
+    estructura_datos = gestion_archivos.escribir_archivo((dni, nombre, edad, email), "mi_contraseña_segura")
+    if estructura_datos:
+        utilidades.pulsar_enter_para_continuar("Se ha creado un nuevo registro.", "normal")
+        utilidades.limpiar_consola()
+        return
+    utilidades.pulsar_enter_para_continuar("Error al modificar el archivo.", "error")
+    return
 
 def mostrar_menu_leer_registro()->None:
     '''Dada una estructura de datos previamente cargada y un DNI se debe filtrar su registro.'''
-    lista=[]
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
-    #logica de buscar en el registro...
-    if not lista:
-        registro = utilidades.buscar_registro_especificado(lista, dni)
-        registro = [("hola", "cristo", 23, "algo"), ("hola", "cristo", 23, "algo"), ("hola", "cristo", 23, "algo")]
+    estructura_datos = gestion_archivos.leer_archivo("mi_contraseña_segura")
+    print(estructura_datos)
+    if estructura_datos:
+        registro = utilidades.buscar_registro_especificado(estructura_datos, dni)
+        print(registro)
         if registro:
-            utilidades.mostrar_registros(registro)
-
-    utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún." "advertencia")
+            utilidades.limpiar_consola()
+            utilidades.mostrar_registros([registro])
+            utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
+            return
+        utilidades.pulsar_enter_para_continuar("El registro especificado no existe.", "advertencia")
+        return
+    utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún.", "advertencia")
     return
 
 def mostrar_menu_modificar_registro()->None:
@@ -150,7 +160,33 @@ def mostrar_menu_eliminar_registro()->None:
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
-    utilidades.eliminar_registro_especificado()
+    estructura_de_datos = gestion_archivos.leer_archivo("mi_contraseña_segura")
+    if estructura_de_datos:
+        registro = utilidades.buscar_registro_especificado(estructura_de_datos, dni)
+        if registro:
+            utilidades.mostrar_registros([registro])
+            confirmado = input("¿Desea eliminar el registro? [S]|[N] >>> ")
+            match confirmado:
+                case 'S':
+                    nueva_estructura = []
+                    for reg in estructura_de_datos:
+                        if reg[0] != dni:
+                            nueva_estructura.append(reg)
+                    #vamos a borrar el archivo y luego sobreescribirlo con un ciclo for
+                    try: 
+                        if os.path.exists(gestion_archivos.BIN_PATH):
+                            os.remove(gestion_archivos.BIN_PATH)  
+                        for reg in nueva_estructura:
+                            gestion_archivos.escribir_archivo(reg, "mi_contraseña_segura")  
+                        utilidades.pulsar_enter_para_continuar("Registro eliminado correctamente.", "normal")
+                    except Exception as e:
+                        utilidades.pulsar_enter_para_continuar(f"Error al eliminar el registro: {e}", "error")
+                case 'N':
+                    utilidades.pulsar_enter_para_continuar("Cancelando operación.", "normal")
+                case _:
+                    pass
+        pass
+    pass
 
 if __name__ == '__main__':
     mostrar_menu_principal()

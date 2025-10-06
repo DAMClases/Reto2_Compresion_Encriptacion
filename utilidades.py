@@ -172,23 +172,33 @@ def validar_correo(email:str)->bool:
        
     return True
 
-def buscar_registro_especificado(estructura_datos:list[tuple[str,str,int,str]], dni:int)->None:
+def buscar_registro_especificado(estructura_datos:list[tuple[str,str,int,str]], dni:str)->None:
     """Muestra los registros introducidos en formato tabla"""
     for registro in estructura_datos:
-        for subelemento in registro:
-            if subelemento[0] == dni:
-                return subelemento
+        if registro[0] == str(dni):
+                return registro
     return None
 
 
 def mostrar_registros(registros:tuple) -> None:
     """Muestra los registros introducidos en formato tabla"""
-    print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
+    print(COLOR_LETRA_AMARILLO + "Mostrando los registros actuales encontrados")
+    print("+" + "-"*10 + "+" + "-"*20 + "+" + "-"*6 + "+" + "-"*30 + "+")
     print(f"|{'ID'.center(10)}|{'Nombre'.center(20)}|{'Edad'.center(6)}|{'Correo electrónico'.center(30)}|")
-    print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
+    print("+" + "-"*10 + "+" + "-"*20 + "+" + "-"*6 + "+" + "-"*30 + "+")
     for registro in registros:
-        print (f"|{registro[0].ljust(10)}|{registro[1].ljust(20)}|{registro[2]:6d}|{registro[3].ljust(30)}|")
-    print("+"+"-"*10 +"+"+ "-"*20 +"+"+ "-"*6 +"+"+ "-"*30 +"+")
+        try:
+            dni = str(registro[0])
+            nombre = str(registro[1])
+            if str(registro[2]).isdigit():
+                edad = int(registro[2])
+            else:
+                edad = registro[2]
+            email = str(registro[3])
+            print(f"|{dni.ljust(10)}|{nombre.ljust(20)}|{edad:06d}|{email.ljust(30)}|")
+        except Exception as e:
+            print(f"|{str(registro).ljust(70)}|  <-- Registro corrupto ({e})")
+    print("+" + "-"*10 + "+" + "-"*20 + "+" + "-"*6 + "+" + "-"*30 + "+")
 
 def modificar_campos_registro(estructura_datos:list[tuple[str,str,int,str]], dni:int)->None:
     """Muestra los registros introducidos en formato tabla"""
