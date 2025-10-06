@@ -143,16 +143,36 @@ def mostrar_menu_leer_registro()->None:
 
 def mostrar_menu_modificar_registro()->None:
     '''Campo modificacion'''
-    # dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
+    dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ").upper()
     
-    # if dni is None:
-    #     utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
-    #     return
+    if dni is None:
+        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+        return
+    estructura_de_datos = gestion_archivos.leer_archivo("mi_contraseña_segura")
+    if estructura_de_datos:
+        registro = utilidades.buscar_registro_especificado(estructura_de_datos, dni)
+        if registro:
+            print(COLOR_TEXTO_AMARILLO + "Se ha encontrado el registro. Modificando...")
+            nuevo_dni = introducir_campo("DNI", "Introduzca un nuevo DNI válido (Ej: 21137083Z) >>> ")
+            nuevo_nombre = introducir_campo("nombre", "Introduzca un nuevo nombre >>> ")
+            nueva_edad = introducir_campo("edad", "Introduzca una nueva edad acotada entre 1-99 años >>> ")
+            nuevo_email = introducir_campo("email", "Introduzca un nuevo email válido (Ej: jero@gmail.com / alberto@outlook.es) >>> ")
+            registro = (nuevo_dni, nuevo_nombre, nueva_edad, nuevo_email)
+            gestion_archivos.escribir_archivo(registro, "mi_contraseña_segura")
+            utilidades.pulsar_enter_para_continuar("Registro modificado correctamente.", "normal")
+            return
+        utilidades.pulsar_enter_para_continuar("No se ha encontrado el registro.", "advertencia")
+
+    utilidades.pulsar_enter_para_continuar("La estructura de datos no existe.", "error")
+    return
+
+
+
     # utilidades.modificar_campos_registro(dni)
-    gestion_archivos.escribir_archivo(("21137083Z", "Angel Melchor", 23, "melchor@algo.pro"), "mi_contraseña_segura")
-    registros = gestion_archivos.leer_archivo("mi_contraseña_segura")
-    utilidades.mostrar_registros(registros)
-    utilidades.pulsar_enter_para_continuar("")
+    # gestion_archivos.escribir_archivo(("21137083Z", "Angel Melchor", 23, "melchor@algo.pro"), "mi_contraseña_segura")
+    # registros = gestion_archivos.leer_archivo("mi_contraseña_segura")
+    # utilidades.mostrar_registros(registros)
+    # utilidades.pulsar_enter_para_continuar("")
 
 def mostrar_menu_eliminar_registro()->None:
     '''Eliminar, DNI'''
