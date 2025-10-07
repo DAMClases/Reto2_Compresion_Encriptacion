@@ -183,23 +183,21 @@ def buscar_registro_especificado(estructura_datos:list[tuple[str,str,int,str]], 
 def mostrar_registros(registros:tuple) -> None:
     """Muestra los registros introducidos en formato tabla"""
     print(COLOR_LETRA_AMARILLO + "Mostrando los registros actuales encontrados")
-    print("+" + "-"*10 + "+" + "-"*20 + "+" + "-"*6 + "+" + "-"*30 + "+")
-    print(f"|{'ID'.center(10)}|{'Nombre'.center(20)}|{'Edad'.center(6)}|{'Correo electrónico'.center(30)}|")
-    print("+" + "-"*10 + "+" + "-"*20 + "+" + "-"*6 + "+" + "-"*30 + "+")
+    max_dni_length = 3
+    max_nombre_length = 6
+    max_correo_length = 18
+    max_digitos_edad = 4
     for registro in registros:
-        try:
-            dni = str(registro[0])
-            nombre = str(registro[1])
-            if str(registro[2]).isdigit():
-                edad = int(registro[2])
-            else:
-                edad = registro[2]
-            email = str(registro[3])
-            print(f"|{dni.ljust(10)}|{nombre.ljust(20)}|{edad:06d}|{email.ljust(30)}|")
-        except Exception as e:
-            print(f"|{str(registro).ljust(70)}|  <-- Registro corrupto ({e})")
-    print("+" + "-"*10 + "+" + "-"*20 + "+" + "-"*6 + "+" + "-"*30 + "+")
-
-
-
+        max_digitos_edad = max(max_digitos_edad, len(str(registro[2])))
+        max_dni_length = max(max_dni_length, len(registro[0]))
+        max_nombre_length = max(max_nombre_length, len(registro[1]))
+        max_correo_length = max(max_correo_length, len(registro[3]))
+    print("+" + "-"* (max_dni_length +2) + "+" + "-"*(max_nombre_length +2) + "+" + "-"*(max_digitos_edad +2) + "+" + "-"*(max_correo_length +2) + "+")
+    print(f"| {'DNI'.center(max_dni_length)} | {'Nombre'.center(max_nombre_length)} | {'Edad'.center(max_digitos_edad)} | {'Correo electrónico'.center(max_correo_length)} |")
+    print("+" + "-"* (max_dni_length +2) + "+" + "-"*(max_nombre_length +2) + "+" + "-"*(max_digitos_edad +2) + "+" + "-"*(max_correo_length +2) + "+")
+    for registro in registros:
+        print(f"| {registro[0].rjust(max_dni_length)} | {registro[1]:<{max_nombre_length}} | {registro[2]:<{max_digitos_edad}} | {registro[3]:<{max_correo_length}} |")
+    
+    print("+" + "-"* (max_dni_length +2) + "+" + "-"*(max_nombre_length +2) + "+" + "-"*(max_digitos_edad +2) + "+" + "-"*(max_correo_length +2) + "+")
+    
     

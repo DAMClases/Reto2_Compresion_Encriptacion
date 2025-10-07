@@ -109,8 +109,8 @@ def escribir_archivo(data: tuple[str, str, int, str], password: str) -> bool:
 
 if __name__ == "__main__":
     password = "mi_contraseña_segura"
-    escribir_archivo(("51164528K", "Alberto", 18, "alberto@gmail.com"), password)
+    escribir_archivo(("51164528K", "Alberto Rodriguez Mendez FUmaporros", 18, "Rodriguez Mendez FUmaporros@gmail.com"), password)
     escribir_archivo(("12312312D", "Jero", 35, "jero@gmail.com"), password)
     escribir_archivo(("81273918Z", "Cristo", 25, "cristo@gmail.com"), password)
-    escribir_archivo(("12312312D", "Jeronimo", 23, "jeroedited@gmail.com"), password)
+    escribir_archivo(("12312331D", "Jeronimo", 23, "jeroedited@gmail.com"), password)
     print("DATA ON MAIN:", leer_archivo(password))
