@@ -5,11 +5,14 @@ import struct
 BIN_PATH = "./data.bin"
 
 def leer_archivo(password: str) -> list[tuple[str, str, int, str]] | None:
-    """Lee datos binarios de un archivo."""
+    """Lee el archivo binario, lo descifra y descomprime.
+    Devuelve una lista de tuplas con los registros o None si hay error."""
     try:
+        # Si no existe, devuelve lista vacía
         if not os.path.exists(BIN_PATH):
             return []
 
+        # Lo primero es descifrar y descomprimir
         with open(BIN_PATH, 'rb') as file:
             binario = file.read()
 
@@ -20,7 +23,8 @@ def leer_archivo(password: str) -> list[tuple[str, str, int, str]] | None:
         data_raw = ez.descomprimir_bytes(data_raw)
         if data_raw is None:
             raise ValueError("No se pudo descomprimir el archivo.")
-
+        
+        # Ahora leemos los registros saltando de tamaño en tamaño
         records = []
         size = ez.record_size()
 
@@ -29,6 +33,7 @@ def leer_archivo(password: str) -> list[tuple[str, str, int, str]] | None:
         while offset + size <= total:
             chunk = data_raw[offset: offset + size]
             offset += size
+            # Por tanto, aquí ya tenemos un “chunk” de tamaño correcto que desempaquetamos
             rec = ez.desempaquetar_registro(chunk)
             if rec:
                 records.append(rec)
@@ -52,8 +57,8 @@ def escribir_archivo(data: tuple[str, str, int, str], password: str) -> bool:
     try:
         if not data or len(data) != 4: raise ValueError("Los datos a escribir deben contener 4 elementos: ID, nombre, edad y correo electrónico.")
 
-        packed = ez.empaquetar_registro(*data)
-        if packed is None:
+        paquete_registro_nuevo = ez.empaquetar_registro(*data)
+        if paquete_registro_nuevo is None:
             raise ValueError("Falló el empaquetado del registro.")
 
         # Carga actual si hay fichero
@@ -61,54 +66,60 @@ def escribir_archivo(data: tuple[str, str, int, str], password: str) -> bool:
             with open(BIN_PATH, 'rb') as f:
                 binario = f.read()
 
-            current = ez.desencriptar_bytes(binario, password)
-            if current is None:
+            datos_archivo = ez.desencriptar_bytes(binario, password)
+            if datos_archivo is None:
                 raise ValueError("No se pudo descifrar el contenedor existente.")
 
-            current = ez.descomprimir_bytes(current)
-            if current is None:
+            datos_archivo = ez.descomprimir_bytes(datos_archivo)
+            if datos_archivo is None:
                 raise ValueError("No se pudo descomprimir el contenedor existente.")
         else:
-            current = b""
+            datos_archivo = b""
 
         # COmprobamos si existe (por ID) y actualizamos si coincide
         actualizando = False
         borrando = False
-        for i in range(0, len(current), ez.record_size()):
-            existing = ez.desempaquetar_registro(current[i:i + ez.record_size()])
+        for i in range(0, len(datos_archivo), ez.record_size()):
+            existing = ez.desempaquetar_registro(datos_archivo[i:i + ez.record_size()])
             if existing and existing[0] == data[0]:
+                # Si la edad es -1 es la condición de eliminado, por lo que saltamos estos bytes
                 if data[2] == -1:
                     borrando = True
-                    current = current[:i] + current[i + ez.record_size():]
+                    datos_archivo = datos_archivo[:i] + datos_archivo[i + ez.record_size():]
                     input("Registro borrado. Pulsa Enter para continuar...")
                     break
-                current = current[:i] + packed + current[i + ez.record_size():]
+                # Si no, actualizamos con los bytes de la actualización
+                datos_archivo = datos_archivo[:i] + paquete_registro_nuevo + datos_archivo[i + ez.record_size():]
                 actualizando = True
                 break
-        # Añade y reempaqueta
+        # Concatenamos si no estamos actualizando ni borrando
         if not actualizando and not borrando:
-            new_plain = current + packed
+            datos_final = datos_archivo + paquete_registro_nuevo
         else:
-            new_plain = current
-
-        zipped = ez.comprimir_bytes(new_plain)
-        if zipped is None:
+            datos_final = datos_archivo
+        del(datos_archivo)  # Liberamos memoria
+        datos_comprimidos = ez.comprimir_bytes(datos_final)
+        del(datos_final)  # Liberamos memoria
+        if datos_comprimidos is None:
             raise ValueError("No se pudo comprimir el contenedor.")
 
-        encrypted = ez.encriptar_bytes(zipped, password)
-        if encrypted is None:
+        datos_encriptados = ez.encriptar_bytes(datos_comprimidos, password)
+        if datos_encriptados is None:
             raise ValueError("No se pudo cifrar el contenedor.")
 
         with open(BIN_PATH, 'wb') as f:
-            f.write(encrypted)
+            f.write(datos_encriptados)
 
+        del(datos_encriptados)  # Liberamos memoria
         return True
 
     except Exception as e:
         print(f"Error al escribir el archivo: {e}")
         return False
 
-def escribir_datos_usuario(user: str, password: str) -> None:
+def escribir_datos_usuario(user: str, password: str) -> bool:
+    """Escribe los datos encriptados del usuario en un archivo cifrado usando la contraseña introducida por el usuario como llave.
+    En este se guarda el nombre de usuario y la clave de cifrado de los datos personales."""
     try:
         with open("./user_data.bin", "wb") as f:
             f.write(ez.encriptar_user_data(user, password) )
@@ -117,18 +128,15 @@ def escribir_datos_usuario(user: str, password: str) -> None:
         print(f"Error al escribir el archivo: {e}")
         return False
     
-def leer_datos_usuario(password) -> str:
+def leer_datos_usuario(password) -> tuple[str, bytes] | None:
+    """Lee los datos del archivo de usuario. Usa la constraña introducida para descifrar.
+     Devuelve (usuario, clave) o None si falla."""
     try:
         with open("./user_data.bin", "rb") as f:
             return ez.desencriptar_user_data(f.read(), password)
+    except TypeError:
+        print("Error: Contraseña incorrecta.")
+        return None
     except Exception as e:
         print(f"Error al leer el archivo: {e}")
         return None
-
-if __name__ == "__main__":
-    password = "admin"
-    escribir_archivo(("51164528K", "Alberto Rodriguez", 18, "alberto@gmail.com"), password)
-    escribir_archivo(("12312312D", "Jero", 35, "jero@gmail.com"), password)
-    escribir_archivo(("81273918Z", "Cristo", 25, "cristo@gmail.com"), password)
-    escribir_archivo(("12312331D", "Jeronimo", 23, "jeroedited@gmail.com"), password)
-    print("DATA ON MAIN:", leer_archivo(password))

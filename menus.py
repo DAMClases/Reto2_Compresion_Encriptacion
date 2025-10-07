@@ -36,7 +36,14 @@ def introducir_campo(campo:str, input_sistema:str, actualizando:bool = False)-> 
                 case 'DNI':
                     dni = input(COLOR_TEXTO_CIAN + input_sistema).upper()
                     if utilidades.validar_dni(dni)[0]:
-                        return dni
+                        if actualizando:
+                            return dni
+                        else:
+                            if utilidades.buscar_registro_especificado(gestion_archivos.leer_archivo(key), dni) is None:
+                                return dni
+                            else:
+                                utilidades.pulsar_enter_para_continuar("El DNI ya existe en la base de datos.", "error")
+                                continue
                 case 'nombre':
                     nombre = input(COLOR_TEXTO_CIAN + input_sistema)
                     if actualizando and nombre == '':
@@ -312,5 +319,5 @@ def mostrar_menu_login()->str:
     global key
     respuesta = login.login()
     if respuesta:
-        key =  str(login.login())
+        key =  str(respuesta)
         mostrar_menu_principal()

@@ -13,26 +13,43 @@ COLOR_TEXTO_ROJO = Fore.RED
 COLOR_TEXTO_MAGENTA = Fore.MAGENTA
 USER_DATA_PATH = "./user_data.bin"
 
-def login():
+def login() -> str | None:
+    """Muestra un menú para ingresar usuario y contraseña.
+    Si el archivo de datos del usuario no existe, lo crea con los datos introducidos.
+    Si existe, verifica las credenciales y devuelve la clave de cifrado si son correctas.
+    Devuelve None si el usuario cancela la operación o si las credenciales son incorrectas"""
     print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + "═" * 50)
     print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + f"{' Iniciar Sesión ':^50}")#centramos en 50 caracteres de ancho
     print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + "═" * 50 + Style.RESET_ALL)
     print()
     while True:
-        user_input = input(COLOR_TEXTO_AMARILLO + "Introduce tu usuario: " )
-        password_input = getpass(COLOR_TEXTO_AMARILLO + "Introduce tu contraseña: ")
+        # Entrada de usuario y contraseña
+        try:
+            user_input = input(COLOR_TEXTO_AMARILLO + "Introduce tu usuario: " )
+        except KeyboardInterrupt:
+            print(COLOR_TEXTO_ROJO + "\nOperación cancelada por el usuario." + Style.RESET_ALL)
+            return None
+        try:
+            password_input = getpass(COLOR_TEXTO_AMARILLO + "Introduce tu contraseña: ")
+        except KeyboardInterrupt:
+            print(COLOR_TEXTO_ROJO + "\nOperación cancelada por el usuario." + Style.RESET_ALL)
+            return None
+        # Si no existe el archivo de datos del usuario, lo crea
         if not os.path.exists(USER_DATA_PATH):
             ga.escribir_datos_usuario(user_input, password_input)
+        # Si existe, verifica las credenciales con los datos almacenados
         else:
             key = ""
             try:
-                user, key = ga.leer_datos_usuario(password_input)                
+                user, key = ga.leer_datos_usuario(password_input)
+                # Aquí ya tendríamos la clave de cifrado si la contraseña es correcta, pero comprobamos el usuario
                 if user_input != user:
-                    utilidades.pulsar_enter_para_continuar("Error de autenticación1")
+                    utilidades.pulsar_enter_para_continuar("Credenciales incorrectas, inténtalo de nuevo.")
                     continue
                 else:
                     break
-                
+            except TypeError:
+                utilidades.pulsar_enter_para_continuar("Error de autenticación")
             except Exception as e:
                 utilidades.pulsar_enter_para_continuar(f"Error de autenticación2 {e}")
     utilidades.pulsar_enter_para_continuar(f"Login exitoso.")
