@@ -220,7 +220,7 @@ def mostrar_menu_eliminar_registro()->None:
         registro = utilidades.buscar_registro_especificado(estructura_de_datos, dni)
         if registro:
             utilidades.mostrar_registros([registro])
-            confirmado = input("¿Desea eliminar el registro? [S]|[N] >>> ")
+            confirmado = input("¿Desea eliminar el registro? [S]|[N] >>> ").upper()
             match confirmado:
                 case 'S':
                     nueva_estructura = []
