@@ -1,5 +1,6 @@
 import utilidades_archivos as ez
 import os
+import struct
 
 BIN_PATH = "./data.bin"
 
@@ -110,22 +111,22 @@ def escribir_archivo(data: tuple[str, str, int, str], password: str) -> bool:
 def escribir_datos_usuario(user: str, password: str) -> None:
     try:
         with open("./user_data.bin", "wb") as f:
-            f.write(ez.encriptar_bytes(user, password))
+            f.write(ez.encriptar_user_data(user, password) )
             return True
     except Exception as e:
         print(f"Error al escribir el archivo: {e}")
         return False
     
-def leer_datos_usuario() -> str:
+def leer_datos_usuario(password) -> str:
     try:
         with open("./user_data.bin", "rb") as f:
-            return ez.desencriptar_user_data(f.read())
+            return ez.desencriptar_user_data(f.read(), password)
     except Exception as e:
         print(f"Error al leer el archivo: {e}")
         return None
 
 if __name__ == "__main__":
-    password = "mi_contraseña_segura"
+    password = "admin"
     escribir_archivo(("51164528K", "Alberto Rodriguez", 18, "alberto@gmail.com"), password)
     escribir_archivo(("12312312D", "Jero", 35, "jero@gmail.com"), password)
     escribir_archivo(("81273918Z", "Cristo", 25, "cristo@gmail.com"), password)
