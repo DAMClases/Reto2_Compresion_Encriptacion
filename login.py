@@ -37,6 +37,3 @@ def login():
                 utilidades.pulsar_enter_para_continuar(f"Error de autenticación2 {e}")
     utilidades.pulsar_enter_para_continuar(f"Exito")
     return key
-
-login()
-

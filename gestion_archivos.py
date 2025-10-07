@@ -126,7 +126,7 @@ def leer_datos_usuario(password) -> str:
         return None
 
 if __name__ == "__main__":
-    password = "mi_contraseña_segura"
+    password = "admin"
     escribir_archivo(("51164528K", "Alberto Rodriguez", 18, "alberto@gmail.com"), password)
     escribir_archivo(("12312312D", "Jero", 35, "jero@gmail.com"), password)
     escribir_archivo(("81273918Z", "Cristo", 25, "cristo@gmail.com"), password)

@@ -12,7 +12,7 @@ import gestion_archivos
 
 #para el apartado gráfico debemos inicializar siempre colorama
 init(autoreset=True)
-
+key = ""
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
 #  Constantes que intervienen en el diseño de la aplicación #
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###    
@@ -121,7 +121,7 @@ def mostrar_menu_crear_registro()->None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
     
-    estructura_datos = gestion_archivos.escribir_archivo((dni, nombre, edad, email), "mi_contraseña_segura")
+    estructura_datos = gestion_archivos.escribir_archivo((dni, nombre, edad, email), key)
     if estructura_datos:
         utilidades.pulsar_enter_para_continuar("Se ha creado un nuevo registro.", "normal")
         utilidades.limpiar_consola()
@@ -142,7 +142,7 @@ def mostrar_menu_leer_registro()->None:
         match opciones:
             case '1':
                 utilidades.limpiar_consola()
-                estructura_datos = gestion_archivos.leer_archivo("mi_contraseña_segura")
+                estructura_datos = gestion_archivos.leer_archivo(key)
                 if estructura_datos:
                     registro = utilidades.mostrar_registros(estructura_datos)
                     utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
@@ -157,7 +157,7 @@ def mostrar_menu_leer_registro()->None:
                 if dni is None:
                     utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
                     return
-                estructura_datos = gestion_archivos.leer_archivo("mi_contraseña_segura")
+                estructura_datos = gestion_archivos.leer_archivo(key)
                 if estructura_datos:
                     registro = utilidades.buscar_registro_especificado(estructura_datos, dni)
                     if registro:
@@ -183,7 +183,7 @@ def mostrar_menu_modificar_registro()->None:
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
-    estructura_de_datos = gestion_archivos.leer_archivo("mi_contraseña_segura")
+    estructura_de_datos = gestion_archivos.leer_archivo(key)
     if estructura_de_datos:
         registro = utilidades.buscar_registro_especificado(estructura_de_datos, dni)
         if registro:
@@ -199,7 +199,7 @@ def mostrar_menu_modificar_registro()->None:
             if nuevo_email is None:
                 nuevo_email = registro[3]
             registro = (dni, nuevo_nombre, nueva_edad, nuevo_email)
-            gestion_archivos.escribir_archivo(registro, "mi_contraseña_segura")
+            gestion_archivos.escribir_archivo(registro, key)
             utilidades.pulsar_enter_para_continuar("Registro modificado correctamente.", "normal")
             return
         utilidades.pulsar_enter_para_continuar("No se ha encontrado el registro.", "advertencia")
@@ -215,7 +215,7 @@ def mostrar_menu_eliminar_registro()->None:
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
-    estructura_de_datos = gestion_archivos.leer_archivo("mi_contraseña_segura")
+    estructura_de_datos = gestion_archivos.leer_archivo(key)
     if estructura_de_datos:
         registro = utilidades.buscar_registro_especificado(estructura_de_datos, dni)
         if registro:
@@ -231,7 +231,7 @@ def mostrar_menu_eliminar_registro()->None:
                         if os.path.exists(gestion_archivos.BIN_PATH):
                             os.remove(gestion_archivos.BIN_PATH)  
                         for reg in nueva_estructura:
-                            gestion_archivos.escribir_archivo(reg, "mi_contraseña_segura")  
+                            gestion_archivos.escribir_archivo(reg, key)  
                         utilidades.pulsar_enter_para_continuar("Registro eliminado correctamente.", "normal")
                         return
                     except Exception as e:
@@ -247,5 +247,11 @@ def mostrar_menu_eliminar_registro()->None:
         pass
     pass
 
-if __name__ == '__main__':
-    mostrar_menu_principal()
+def mostrar_menu_login()->str:
+    '''Despliega el menú de login con un diseño intuitivo en consola'''
+    import login
+    global key
+    key =  str(login.login())
+    utilidades.pulsar_enter_para_continuar("Login exitoso. Pulsa Enter para continuar...")
+    if key:
+        mostrar_menu_principal()
