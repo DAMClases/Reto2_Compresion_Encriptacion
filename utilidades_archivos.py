@@ -5,6 +5,8 @@ import os
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+import json
+import utilidades
 
 # Formato binario fijo: ID(10s), nombre(50s), edad(h), email(100s)
 CONFIGURACION_PAQUETES = '10s50sh100s'
@@ -142,3 +144,17 @@ def encriptar_user_data(user:str, contrasena: str) -> bytes:
 
 def desencriptar_user_data(bytes: bytes) -> str:
     return struct.unpack('20s40s', desencriptar_bytes(bytes, 'contrasena'))
+
+def exportar_json(registros:list[tuple]):
+    with open('datos.json','wb') as datos:
+        lista_registros = []
+        for registro in registros:
+            lista_registros.append({
+                "DNI": registro[0],
+                "Nombre": registro[1],
+                "Edad": registro[2],
+                "Email": registro[3]
+            })
+        datos.write(json.dumps(lista_registros, indent=4).encode('utf-8'))
+    utilidades.pulsar_enter_para_continuar("Datos exportados a 'datos.json'. Pulsa Enter para continuar...")
+    
