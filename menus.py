@@ -79,29 +79,32 @@ def mostrar_menu_principal()->None:
         print(COLOR_TEXTO_AMARILLO + " [5]" + COLOR_TEXTO_BLANCO + " ➤ Finalizar sesión")
         print()
         print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + "═" * 50 + Style.RESET_ALL)
-        opcion = input(COLOR_TEXTO_CIAN + "\nSeleccione una opción (1-5) >>> " + Style.RESET_ALL)
+        try:
+            opcion = input(COLOR_TEXTO_CIAN + "\nSeleccione una opción (1-5) >>> " + Style.RESET_ALL)
+            match opcion:
+                case '1':
+                    print(COLOR_TEXTO_VERDE + "\nCrear registro seleccionado ")
+                    mostrar_menu_crear_registro()
+                case '2':
+                    print(COLOR_TEXTO_VERDE + "\nLeer registro seleccionado ")
+                    mostrar_menu_leer_registro()
+                case '3':
+                    print(COLOR_TEXTO_VERDE + "\nModificar registro seleccionado ")
+                    mostrar_menu_modificar_registro()
+                case '4':
+                    print(COLOR_TEXTO_ROJO + "\nEliminar registro seleccionado ")
+                    mostrar_menu_eliminar_registro()
+                case '5':
+                    print(COLOR_TEXTO_MAGENTA + "\nFinalizando sesión... ¡Hasta pronto!")
+                    exit()
+                case _:
+                    utilidades.pulsar_enter_para_continuar("\nOpción inválida. Por favor, elige un número del 1 al 5.","error")
+        except KeyboardInterrupt:
+            continue
 
-        match opcion:
-            case '1':
-                print(COLOR_TEXTO_VERDE + "\nCrear registro seleccionado ")
-                mostrar_menu_crear_registro()
-            case '2':
-                print(COLOR_TEXTO_VERDE + "\nLeer registro seleccionado ")
-                mostrar_menu_leer_registro()
-            case '3':
-                print(COLOR_TEXTO_VERDE + "\nModificar registro seleccionado ")
-                mostrar_menu_modificar_registro()
-            case '4':
-                print(COLOR_TEXTO_ROJO + "\nEliminar registro seleccionado ")
-                mostrar_menu_eliminar_registro()
-            case '5':
-                print(COLOR_TEXTO_MAGENTA + "\nFinalizando sesión... ¡Hasta pronto!")
-                exit()
-            case _:
-                utilidades.pulsar_enter_para_continuar("\nOpción inválida. Por favor, elige un número del 1 al 5.","error")
 
 def mostrar_menu_crear_registro()->None:
-    '''Mediante la entrada de datos de los usuarios y las validaciones pertinentes se crea un nuevo registro''' 
+    '''Función que mediante la entrada de datos de los usuarios y las validaciones pertinentes se crea un nuevo registro.''' 
     utilidades.limpiar_consola()
     print(COLOR_TEXTO_AMARILLO + "Opción actual: crear registro")   
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
@@ -130,52 +133,34 @@ def mostrar_menu_crear_registro()->None:
     return
 
 def mostrar_menu_leer_registro()->None:
-    '''Dada una estructura de datos previamente cargada y un DNI se debe filtrar su registro.'''
+    '''Función que despliega las diferentes funcionalidades e interacciones para leer los registros. Se basa en un
+    submenú de dos opciones:
+    1. Leer todos los registros: Recoge las funcionalidades para que el usuario cuando entre
+    un DNI válido haga la secuencia de leer el registro y extraer la estructura de datos, luego recorrerla y 
+    mostrar finalmente TODOS los registros si existen. 
+     
+    2. Leer un registro concreto: Recoge las funcionalidades para que el usuario cuando entre
+    un DNI válido haga la secuencia de leer el registro y extraer la estructura de datos, luego recorrerla y 
+    mostrar finalmente el registro si existe.
+
+    En ambas opciones, al finalizar la secuencia el usuario puede decidir si exportar los datos a un fichero JSON.
+    '''
     while True:
-        try:
-            print(COLOR_TEXTO_AMARILLO + "Opción actual: leer registro(s)")   
-            print(COLOR_TEXTO_AMARILLO + " [1]" + COLOR_TEXTO_BLANCO + " ➤ Leer todos los registros")
-            print(COLOR_TEXTO_AMARILLO + " [2]" + COLOR_TEXTO_BLANCO + " ➤ Leer registro específico")
-            opciones = input(COLOR_TEXTO_AMARILLO + "Seleccione la opción pertinente >>> ")
-        except KeyboardInterrupt:
-            return 
-        match opciones:
-            case '1':
-                utilidades.limpiar_consola()
-                estructura_datos = gestion_archivos.leer_archivo(key)
-                if estructura_datos:
-                    utilidades.mostrar_registros(estructura_datos)
+        while True:
+            try:
+                print(COLOR_TEXTO_AMARILLO + "Opción actual: leer registro(s)")   
+                print(COLOR_TEXTO_AMARILLO + " [1]" + COLOR_TEXTO_BLANCO + " ➤ Leer todos los registros")
+                print(COLOR_TEXTO_AMARILLO + " [2]" + COLOR_TEXTO_BLANCO + " ➤ Leer registro específico")
+                opciones = input(COLOR_TEXTO_AMARILLO + "Seleccione la opción pertinente >>> ")
+            except KeyboardInterrupt:
+                return 
+            match opciones:
+                case '1':
+                    utilidades.limpiar_consola()
+                    estructura_datos = gestion_archivos.leer_archivo(key)
                     if estructura_datos:
-                        while True:
-                            try:
-                                confirmacion = input(COLOR_TEXTO_CIAN + "\n¿Desea exportar los datos a formato JSON? [S]|[N] >>> ").upper()
-                            except KeyboardInterrupt:
-                                utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
-                                break
-                            if confirmacion == 'S':
-                                utilidades_archivos.exportar_json(estructura_datos)
-                                break
-                            elif confirmacion == 'N':
-                                utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
-                                break
-                    return
-                else:
-                    utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún.", "advertencia")
-                    return
-                
-            case '2':
-                utilidades.limpiar_consola()
-                dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
-                if dni is None:
-                    utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
-                    return
-                estructura_datos = gestion_archivos.leer_archivo(key)
-                if estructura_datos:
-                    registro = utilidades.buscar_registro_especificado(estructura_datos, dni)
-                    if registro:
-                        utilidades.limpiar_consola()
-                        utilidades.mostrar_registros([registro])
-                        if registro:
+                        utilidades.mostrar_registros(estructura_datos)
+                        if estructura_datos:
                             while True:
                                 try:
                                     confirmacion = input(COLOR_TEXTO_CIAN + "\n¿Desea exportar los datos a formato JSON? [S]|[N] >>> ").upper()
@@ -183,24 +168,60 @@ def mostrar_menu_leer_registro()->None:
                                     utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
                                     break
                                 if confirmacion == 'S':
-                                    utilidades_archivos.exportar_json([registro])
+                                    utilidades_archivos.exportar_json(estructura_datos)
                                     break
                                 elif confirmacion == 'N':
                                     utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
                                     break
                         return
                     else:
-                        utilidades.pulsar_enter_para_continuar("El registro especificado no existe.", "advertencia")
+                        utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún.", "advertencia")
                         return
-                utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún.", "advertencia")
-                return
-            case _:
-                utilidades.pulsar_enter_para_continuar("Tecla incorrecta. Volviendo al menú principal.", "advertencia")
-                return
+                    
+                case '2':
+                    utilidades.limpiar_consola()
+                    dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
+                    if dni is None:
+                        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+                        return
+                    estructura_datos = gestion_archivos.leer_archivo(key)
+                    if estructura_datos:
+                        registro = utilidades.buscar_registro_especificado(estructura_datos, dni)
+                        if registro:
+                            utilidades.limpiar_consola()
+                            utilidades.mostrar_registros([registro])
+                            if registro:
+                                while True:
+                                    try:
+                                        confirmacion = input(COLOR_TEXTO_CIAN + "\n¿Desea exportar los datos a formato JSON? [S]|[N] >>> ").upper()
+                                    except KeyboardInterrupt:
+                                        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+                                        break
+                                    if confirmacion == 'S':
+                                        utilidades_archivos.exportar_json([registro])
+                                        break
+                                    elif confirmacion == 'N':
+                                        utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
+                                        break
+                            return
+                        else:
+                            utilidades.pulsar_enter_para_continuar("El registro especificado no existe.", "advertencia")
+                            return
+                    utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún.", "advertencia")
+                    return
+                case _:
+                    utilidades.pulsar_enter_para_continuar("Tecla incorrecta.", "advertencia")
+                    utilidades.limpiar_consola()
+                    continue
             
 
 def mostrar_menu_modificar_registro()->None:
-    '''Campo modificacion'''
+    '''Función que despliega las diferentes funcionalidades e interacciones para que el usuario cuando entre
+    un DNI válido haga la secuencia de leer el registro y extraer la estructura de datos, luego recorrerla y 
+    mostrar finalmente el registro.
+    
+    El usuario posteriormente puede o bien omitir la modificación pulsando ENTER o rellenar los campos requeridos.
+    Luego el programa valida los campos y finalmente sobreescribe el fichero.'''
     utilidades.limpiar_consola()
     print(COLOR_TEXTO_AMARILLO + "Opción actual: modificar registro")   
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
@@ -233,7 +254,12 @@ def mostrar_menu_modificar_registro()->None:
     return
 
 def mostrar_menu_eliminar_registro()->None:
-    '''Eliminar, DNI'''
+    '''Función que despliega las diferentes funcionalidades e interacciones para que el usuario cuando entre
+    un DNI válido haga la secuencia de leer el registro y extraer la estructura de datos, luego recorrerla y 
+    mostrar finalmente el registro.
+    
+    El usuario posteriormente puede o bien decidir borrar el registro encontrado (si lo encuentra) o bien 
+    regresar al menú principal sin efectuar cambios.'''
     utilidades.limpiar_consola()
     print(COLOR_TEXTO_AMARILLO + "Opción actual: eliminar registro")   
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
@@ -245,41 +271,46 @@ def mostrar_menu_eliminar_registro()->None:
         registro = utilidades.buscar_registro_especificado(estructura_de_datos, dni)
         if registro:
             utilidades.mostrar_registros([registro])
-            try:
-                confirmado = input("¿Desea eliminar el registro? [S]|[N] >>> ").upper()
-            except KeyboardInterrupt:
-                utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
-                return
-            match confirmado:
-                case 'S':
-                    nueva_estructura = []
-                    for reg in estructura_de_datos:
-                        if reg[0] != dni:
-                            nueva_estructura.append(reg)
-                    try: 
-                        if os.path.exists(gestion_archivos.BIN_PATH):
-                            os.remove(gestion_archivos.BIN_PATH)  
-                        for reg in nueva_estructura:
-                            gestion_archivos.escribir_archivo(reg, key)  
-                        utilidades.pulsar_enter_para_continuar("Registro eliminado correctamente.", "normal")
-                        return
-                    except Exception as e:
-                        utilidades.pulsar_enter_para_continuar(f"Error al eliminar el registro: {e}", "error")
-                        return
-                case 'N':
-                    utilidades.pulsar_enter_para_continuar("Cancelando operación.", "normal")
+            while True:
+                try:
+                    confirmado = input("¿Desea eliminar el registro? [S]|[N] >>> ").upper()
+                except KeyboardInterrupt:
+                    utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
                     return
-                case _:
-                    utilidades.pulsar_enter_para_continuar("Cancelando operación.", "normal")
-                    return
+                match confirmado:
+                    case 'S':
+                        nueva_estructura = []
+                        for reg in estructura_de_datos:
+                            if reg[0] != dni:
+                                nueva_estructura.append(reg)
+                        try: 
+                            if os.path.exists(gestion_archivos.BIN_PATH):
+                                os.remove(gestion_archivos.BIN_PATH)  
+                            for reg in nueva_estructura:
+                                gestion_archivos.escribir_archivo(reg, key)  
+                            utilidades.pulsar_enter_para_continuar("Registro eliminado correctamente.", "normal")
+                            return
+                        except Exception as e:
+                            utilidades.pulsar_enter_para_continuar(f"Error al eliminar el registro: {e}", "error")
+                            return
+                    case 'N':
+                        utilidades.pulsar_enter_para_continuar("Cancelando operación.", "normal")
+                        return
+                    case _:
+                        utilidades.pulsar_enter_para_continuar("Tecla incorrecta.", "advertencia")
+                        utilidades.limpiar_consola()
+                        continue
 
-        pass
-    pass
+        utilidades.pulsar_enter_para_continuar("El registro no se ha encontrado.", "advertencia")
+
+    utilidades.pulsar_enter_para_continuar("No existe estructura de datos.", "error")
+
 
 def mostrar_menu_login()->str:
     '''Despliega el menú de login con un diseño intuitivo en consola'''
     import login
     global key
-    key =  str(login.login())
-    if key:
+    respuesta = login.login()
+    if respuesta:
+        key =  str(login.login())
         mostrar_menu_principal()
