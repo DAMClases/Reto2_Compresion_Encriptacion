@@ -2,6 +2,7 @@ import struct
 import zlib
 import base64
 import os
+import menus
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
