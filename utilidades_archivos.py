@@ -135,3 +135,10 @@ def desencriptar_bytes(input_bytes: bytes, password: str) -> bytes:
 
 def record_size() -> int:
     return TAMAÑO_REGISTRO
+
+
+def encriptar_user_data(user:str, contrasena: str) -> bytes:
+    return encriptar_bytes(struct.pack('20s40s', user, contrasena),'contrasena')
+
+def desencriptar_user_data(bytes: bytes) -> str:
+    return struct.unpack('20s40s', desencriptar_bytes(bytes, 'contrasena'))
