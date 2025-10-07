@@ -144,12 +144,24 @@ def mostrar_menu_leer_registro()->None:
                 utilidades.limpiar_consola()
                 estructura_datos = gestion_archivos.leer_archivo(key)
                 if estructura_datos:
-                    registro = utilidades.mostrar_registros(estructura_datos)
-                    utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
+                    utilidades.mostrar_registros(estructura_datos)
+                    if estructura_datos:
+                        while True:
+                            try:
+                                confirmacion = input(COLOR_TEXTO_CIAN + "\n¿Desea exportar los datos a formato JSON? [S]|[N] >>> ").upper()
+                            except KeyboardInterrupt:
+                                utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+                                break
+                            if confirmacion == 'S':
+                                utilidades_archivos.exportar_json(estructura_datos)
+                                break
+                            elif confirmacion == 'N':
+                                utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
+                                break
                     return
-
-                utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún.", "advertencia")
-                return
+                else:
+                    utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún.", "advertencia")
+                    return
                 
             case '2':
                 utilidades.limpiar_consola()
@@ -163,10 +175,23 @@ def mostrar_menu_leer_registro()->None:
                     if registro:
                         utilidades.limpiar_consola()
                         utilidades.mostrar_registros([registro])
-                        utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
+                        if registro:
+                            while True:
+                                try:
+                                    confirmacion = input(COLOR_TEXTO_CIAN + "\n¿Desea exportar los datos a formato JSON? [S]|[N] >>> ").upper()
+                                except KeyboardInterrupt:
+                                    utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+                                    break
+                                if confirmacion == 'S':
+                                    utilidades_archivos.exportar_json([registro])
+                                    break
+                                elif confirmacion == 'N':
+                                    utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
+                                    break
                         return
-                    utilidades.pulsar_enter_para_continuar("El registro especificado no existe.", "advertencia")
-                    return
+                    else:
+                        utilidades.pulsar_enter_para_continuar("El registro especificado no existe.", "advertencia")
+                        return
                 utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún.", "advertencia")
                 return
             case _:
@@ -220,7 +245,11 @@ def mostrar_menu_eliminar_registro()->None:
         registro = utilidades.buscar_registro_especificado(estructura_de_datos, dni)
         if registro:
             utilidades.mostrar_registros([registro])
-            confirmado = input("¿Desea eliminar el registro? [S]|[N] >>> ").upper()
+            try:
+                confirmado = input("¿Desea eliminar el registro? [S]|[N] >>> ").upper()
+            except KeyboardInterrupt:
+                utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+                return
             match confirmado:
                 case 'S':
                     nueva_estructura = []
@@ -252,6 +281,5 @@ def mostrar_menu_login()->str:
     import login
     global key
     key =  str(login.login())
-    utilidades.pulsar_enter_para_continuar("Login exitoso. Pulsa Enter para continuar...")
     if key:
         mostrar_menu_principal()
