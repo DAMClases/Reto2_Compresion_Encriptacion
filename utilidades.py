@@ -8,6 +8,14 @@ COLOR_LETRA_CYAN = Fore.CYAN
 COLOR_LETRA_AMARILLO = Fore.YELLOW
 
 def pulsar_enter_para_continuar(mensaje = '', tipo = 'normal'):
+    '''Función que recibe un mensaje personalizado y un tipo de mensaje. 
+    Dependiendo del tipo de mensaje hay una gama de colores que definen:
+    Blanco: Mensaje normal - exitoso
+    Amarillo: Mensaje advertencia - error común o típico.
+    Rojo: Mensaje de error - error importante o crítico.
+    
+    Finalmente para el flujo del programa con un input, a la espera de que el usuario pulse ENTER
+    para continuar.'''
     match tipo:
         case "normal":
             color = Fore.WHITE
@@ -26,7 +34,7 @@ def pulsar_enter_para_continuar(mensaje = '', tipo = 'normal'):
         pass
 
 def limpiar_consola():
-    '''Función para limpiar consola y blablabla'''
+    '''Función para limpiar consola.'''
     os.system("cls" if os.name == 'nt' else "clear")
 
 def validar_nombre(nombre: str) -> bool:
@@ -173,7 +181,9 @@ def validar_correo(email:str)->bool:
     return True
 
 def buscar_registro_especificado(estructura_datos:list[tuple[str,str,int,str]], dni:str)->None:
-    """Muestra los registros introducidos en formato tabla"""
+    """Función que recibe como parámetro una estructura de datos y un dni previamente validado permite
+    recorrer la estructura en busca de una coincidencia con el parámetro del dni. Si la encuentra, devuelve
+    el registro exacto (tupla)."""
     for registro in estructura_datos:
         if registro[0] == str(dni):
                 return registro
