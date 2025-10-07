@@ -140,11 +140,13 @@ def record_size() -> int:
     return TAMAÑO_REGISTRO
 
 
-def encriptar_user_data(user:str, contrasena: str) -> bytes:
-    return encriptar_bytes(struct.pack('20s40s', user, contrasena),'contrasena')
+def encriptar_user_data(user:str, contrasena:str) -> bytes:
+    key = Fernet.generate_key()
+    return encriptar_bytes(struct.pack('20s', user.encode("utf-8"))+ key, contrasena)
 
-def desencriptar_user_data(bytes: bytes) -> str:
-    return struct.unpack('20s40s', desencriptar_bytes(bytes, 'contrasena'))
+def desencriptar_user_data(byts: bytes, password) -> str:
+    desempaquetado = desencriptar_bytes(byts, password)
+    return struct.unpack('20s', desempaquetado[:20])[0].decode("utf-8").rstrip('\x00'), desempaquetado[20:]
 
 def exportar_json(registros:list[tuple]):
     with open('datos.json','wb') as datos:
