@@ -35,5 +35,5 @@ def login():
                 
             except Exception as e:
                 utilidades.pulsar_enter_para_continuar(f"Error de autenticación2 {e}")
-    utilidades.pulsar_enter_para_continuar(f"Exito")
+    utilidades.pulsar_enter_para_continuar(f"Login exitoso.")
     return key
