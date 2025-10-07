@@ -28,7 +28,7 @@ COLOR_TEXTO_MAGENTA = Fore.MAGENTA
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
 #                       Funciones                           #
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
-def introducir_campo(campo:str, input_sistema:str)-> str | int | None:
+def introducir_campo(campo:str, input_sistema:str, actualizando:bool = False)-> str | int | None:
     '''Función que recoge y valida la entrada de datos del usuario.'''
     while True:
         try:
@@ -39,17 +39,24 @@ def introducir_campo(campo:str, input_sistema:str)-> str | int | None:
                         return dni
                 case 'nombre':
                     nombre = input(COLOR_TEXTO_CIAN + input_sistema)
+                    if actualizando and nombre == '':
+                        return None
                     if utilidades.validar_nombre(nombre):
                         return nombre
                 case 'edad':
                     try:
-                        edad = int(input(COLOR_TEXTO_CIAN + input_sistema))
+                        edad = input(COLOR_TEXTO_CIAN + input_sistema)
+                        if actualizando and edad == '':
+                            return None
+                        edad = int(edad)
                         if utilidades.validar_edad(edad):
                             return edad
                     except ValueError:
                         utilidades.pulsar_enter_para_continuar("El dato introducido debe ser obligatoriamente numérico de tipo entero.", "error")                    
                 case 'email':
                     email = input(COLOR_TEXTO_CIAN + input_sistema)
+                    if actualizando and email == '':
+                        return None
                     if utilidades.validar_correo(email):
                         return email
                 case _:
@@ -66,7 +73,7 @@ def mostrar_menu_principal()->None:
         print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + "═" * 50 + Style.RESET_ALL)
         print()
         print(COLOR_TEXTO_AMARILLO + " [1]" + COLOR_TEXTO_BLANCO + " ➤ Crear registro")
-        print(COLOR_TEXTO_AMARILLO + " [2]" + COLOR_TEXTO_BLANCO + " ➤ Leer registro")
+        print(COLOR_TEXTO_AMARILLO + " [2]" + COLOR_TEXTO_BLANCO + " ➤ Leer registro(s)")
         print(COLOR_TEXTO_AMARILLO + " [3]" + COLOR_TEXTO_BLANCO + " ➤ Modificar registro")
         print(COLOR_TEXTO_AMARILLO + " [4]" + COLOR_TEXTO_BLANCO + " ➤ Eliminar registro")
         print(COLOR_TEXTO_AMARILLO + " [5]" + COLOR_TEXTO_BLANCO + " ➤ Finalizar sesión")
@@ -94,7 +101,9 @@ def mostrar_menu_principal()->None:
                 utilidades.pulsar_enter_para_continuar("\nOpción inválida. Por favor, elige un número del 1 al 5.","error")
 
 def mostrar_menu_crear_registro()->None:
-    '''Mediante la entrada de datos de los usuarios y las validaciones pertinentes se crea un nuevo registro'''    
+    '''Mediante la entrada de datos de los usuarios y las validaciones pertinentes se crea un nuevo registro''' 
+    utilidades.limpiar_consola()
+    print(COLOR_TEXTO_AMARILLO + "Opción actual: crear registro")   
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
@@ -122,29 +131,55 @@ def mostrar_menu_crear_registro()->None:
 
 def mostrar_menu_leer_registro()->None:
     '''Dada una estructura de datos previamente cargada y un DNI se debe filtrar su registro.'''
-    dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
-    if dni is None:
-        utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
-        return
-    estructura_datos = gestion_archivos.leer_archivo("mi_contraseña_segura")
-    print(estructura_datos)
-    if estructura_datos:
-        registro = utilidades.buscar_registro_especificado(estructura_datos, dni)
-        print(registro)
-        if registro:
-            utilidades.limpiar_consola()
-            utilidades.mostrar_registros([registro])
-            utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
-            return
-        utilidades.pulsar_enter_para_continuar("El registro especificado no existe.", "advertencia")
-        return
-    utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún.", "advertencia")
-    return
+    while True:
+        try:
+            print(COLOR_TEXTO_AMARILLO + "Opción actual: leer registro(s)")   
+            print(COLOR_TEXTO_AMARILLO + " [1]" + COLOR_TEXTO_BLANCO + " ➤ Leer todos los registros")
+            print(COLOR_TEXTO_AMARILLO + " [2]" + COLOR_TEXTO_BLANCO + " ➤ Leer registro específico")
+            opciones = input(COLOR_TEXTO_AMARILLO + "Seleccione la opción pertinente >>> ")
+        except KeyboardInterrupt:
+            return 
+        match opciones:
+            case '1':
+                utilidades.limpiar_consola()
+                estructura_datos = gestion_archivos.leer_archivo("mi_contraseña_segura")
+                if estructura_datos:
+                    registro = utilidades.mostrar_registros(estructura_datos)
+                    utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
+                    return
+
+                utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún.", "advertencia")
+                return
+                
+            case '2':
+                utilidades.limpiar_consola()
+                dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
+                if dni is None:
+                    utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
+                    return
+                estructura_datos = gestion_archivos.leer_archivo("mi_contraseña_segura")
+                if estructura_datos:
+                    registro = utilidades.buscar_registro_especificado(estructura_datos, dni)
+                    if registro:
+                        utilidades.limpiar_consola()
+                        utilidades.mostrar_registros([registro])
+                        utilidades.pulsar_enter_para_continuar("Operación completada.", "normal")
+                        return
+                    utilidades.pulsar_enter_para_continuar("El registro especificado no existe.", "advertencia")
+                    return
+                utilidades.pulsar_enter_para_continuar("La estructura de datos no existe aún.", "advertencia")
+                return
+            case _:
+                utilidades.pulsar_enter_para_continuar("Tecla incorrecta. Volviendo al menú principal.", "advertencia")
+                return
+            
 
 def mostrar_menu_modificar_registro()->None:
     '''Campo modificacion'''
-    dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ").upper()
-    
+    utilidades.limpiar_consola()
+    print(COLOR_TEXTO_AMARILLO + "Opción actual: modificar registro")   
+    dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
+    utilidades.limpiar_consola()
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
         return
@@ -152,30 +187,30 @@ def mostrar_menu_modificar_registro()->None:
     if estructura_de_datos:
         registro = utilidades.buscar_registro_especificado(estructura_de_datos, dni)
         if registro:
-            print(COLOR_TEXTO_AMARILLO + "Se ha encontrado el registro. Modificando...")
-            nuevo_dni = introducir_campo("DNI", "Introduzca un nuevo DNI válido (Ej: 21137083Z) >>> ")
-            nuevo_nombre = introducir_campo("nombre", "Introduzca un nuevo nombre >>> ")
-            nueva_edad = introducir_campo("edad", "Introduzca una nueva edad acotada entre 1-99 años >>> ")
-            nuevo_email = introducir_campo("email", "Introduzca un nuevo email válido (Ej: jero@gmail.com / alberto@outlook.es) >>> ")
-            registro = (nuevo_dni, nuevo_nombre, nueva_edad, nuevo_email)
+            utilidades.mostrar_registros([registro])
+            print(COLOR_TEXTO_AMARILLO + "Se ha encontrado el registro.\nInstrucciones: \n[1]. Pulse ENTER para dejar el valor actual sin modificar. \n[2]. Introduzca nuevas opciones y pulse ENTER para continuar con otro campo.")
+            nuevo_nombre = introducir_campo("nombre", "Introduzca un nuevo nombre >>> ", True)
+            if nuevo_nombre is None:
+                nuevo_nombre = registro[1]
+            nueva_edad = introducir_campo("edad", "Introduzca una nueva edad acotada entre 1-99 años >>> ", True)
+            if nueva_edad is None:
+                nueva_edad = registro[2]
+            nuevo_email = introducir_campo("email", "Introduzca un nuevo email válido (Ej: jero@gmail.com / alberto@outlook.es) >>> ", True)
+            if nuevo_email is None:
+                nuevo_email = registro[3]
+            registro = (dni, nuevo_nombre, nueva_edad, nuevo_email)
             gestion_archivos.escribir_archivo(registro, "mi_contraseña_segura")
             utilidades.pulsar_enter_para_continuar("Registro modificado correctamente.", "normal")
             return
         utilidades.pulsar_enter_para_continuar("No se ha encontrado el registro.", "advertencia")
-
+        return
     utilidades.pulsar_enter_para_continuar("La estructura de datos no existe.", "error")
     return
 
-
-
-    # utilidades.modificar_campos_registro(dni)
-    # gestion_archivos.escribir_archivo(("21137083Z", "Angel Melchor", 23, "melchor@algo.pro"), "mi_contraseña_segura")
-    # registros = gestion_archivos.leer_archivo("mi_contraseña_segura")
-    # utilidades.mostrar_registros(registros)
-    # utilidades.pulsar_enter_para_continuar("")
-
 def mostrar_menu_eliminar_registro()->None:
     '''Eliminar, DNI'''
+    utilidades.limpiar_consola()
+    print(COLOR_TEXTO_AMARILLO + "Opción actual: eliminar registro")   
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
@@ -192,19 +227,23 @@ def mostrar_menu_eliminar_registro()->None:
                     for reg in estructura_de_datos:
                         if reg[0] != dni:
                             nueva_estructura.append(reg)
-                    #vamos a borrar el archivo y luego sobreescribirlo con un ciclo for
                     try: 
                         if os.path.exists(gestion_archivos.BIN_PATH):
                             os.remove(gestion_archivos.BIN_PATH)  
                         for reg in nueva_estructura:
                             gestion_archivos.escribir_archivo(reg, "mi_contraseña_segura")  
                         utilidades.pulsar_enter_para_continuar("Registro eliminado correctamente.", "normal")
+                        return
                     except Exception as e:
                         utilidades.pulsar_enter_para_continuar(f"Error al eliminar el registro: {e}", "error")
+                        return
                 case 'N':
                     utilidades.pulsar_enter_para_continuar("Cancelando operación.", "normal")
+                    return
                 case _:
-                    pass
+                    utilidades.pulsar_enter_para_continuar("Cancelando operación.", "normal")
+                    return
+
         pass
     pass
 
