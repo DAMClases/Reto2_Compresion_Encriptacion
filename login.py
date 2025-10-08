@@ -24,6 +24,10 @@ def login() -> str | None:
     print()
     while True:
         # Entrada de usuario y contraseña
+        utilidades.limpiar_consola()
+        if not os.path.exists(USER_DATA_PATH):
+            print(COLOR_TEXTO_CIAN + "No se han encontrado datos de usuario. Se procederá a crear una nueva cuenta." + Style.RESET_ALL)
+        print("Por favor, introduce tus credenciales." + COLOR_TEXTO_VERDE + "(Ctrl+C para cancelar)" + Style.RESET_ALL)
         try:
             user_input = input(COLOR_TEXTO_AMARILLO + "Introduce tu usuario: " )
         except KeyboardInterrupt:
@@ -37,6 +41,8 @@ def login() -> str | None:
         # Si no existe el archivo de datos del usuario, lo crea
         if not os.path.exists(USER_DATA_PATH):
             ga.escribir_datos_usuario(user_input, password_input)
+            utilidades.pulsar_enter_para_continuar(COLOR_TEXTO_VERDE + "Cuenta creada exitosamente. " + COLOR_TEXTO_AMARILLO + "Por favor, inicia sesión." ) 
+            continue
         # Si existe, verifica las credenciales con los datos almacenados
         else:
             key = ""
