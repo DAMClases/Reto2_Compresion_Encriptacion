@@ -64,6 +64,7 @@ Para ejecutar el programa se ejecuta en la consola el siguiente comando:
 ```
 python main.py
 ```
+**Nota**: Para cancelar cualquier operación utiliza el comando _CTRL-C_.
 El programa permite al usuario almacenar datos de forma encriptada y comprimida utilizando las librerías cryptography y zlib. El programa se compone principalmente de dos menús:
 
 ### Menu de login
