@@ -27,17 +27,21 @@ def generar_key(password: str, salt: bytes) -> bytes:
     # This function makes no assumption regarding the given password. It will be treated as a byte sequence.
 
     # https://docs.rocketsoftware.com/es-ES/bundle/unidataunibasiccommands_rg_824/page/vmn1685024690247.html
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=ITERACIONES,
-    )
-    # Por tanto, con esta derivamos la clave con el password (codificado a bytes)
-    key = kdf.derive(password.encode('utf-8'))
-    # Y devolvemos la clave en formato base64 urlsafe
-    return base64.urlsafe_b64encode(key)
-
+    try:
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=salt,
+            iterations=ITERACIONES,
+        )
+        # Por tanto, con esta derivamos la clave con el password (codificado a bytes)
+        key = kdf.derive(password.encode('utf-8'))
+        # Y devolvemos la clave en formato base64 urlsafe
+        return base64.urlsafe_b64encode(key)
+    except Exception as ex:
+        print(f"Error. {ex}")
+        return
+# generar_key(2, True)
 # ------------------------
 # Empaquetado de registros
 # ------------------------
@@ -157,25 +161,52 @@ def record_size() -> int:
 
 def encriptar_user_data(user:str, contrasena:str) -> bytes:
     """Encripta los datos del usuario (nombre de usuario y clave de cifrado) con la contraseña introducida."""
-    key = Fernet.generate_key()
-    return encriptar_bytes(struct.pack('20s', user.encode("utf-8"))+ key, contrasena)
+    try:
+        key = Fernet.generate_key()
+        return encriptar_bytes(struct.pack('20s', user.encode("utf-8"))+ key, contrasena)
+    
+    except AttributeError as ae:
+        print(f"Error. {ae}")
+        return
+    except TypeError as te:
+        print(f"Error en el desempaquetamiento. {te}")
+        return
+    except Exception as ex:
+        print(f"Error. {ex}")
+        return
 
 def desencriptar_user_data(byts: bytes, password) -> str:
     """Desencripta los datos del usuario, devuelve (usuario, clave) o None si falla."""
-    desempaquetado = desencriptar_bytes(byts, password)
-    return struct.unpack('20s', desempaquetado[:20])[0].decode("utf-8").rstrip('\x00'), desempaquetado[20:]
+    try:
+        desempaquetado = desencriptar_bytes(byts, password)
+        return struct.unpack('20s', desempaquetado[:20])[0].decode("utf-8").rstrip('\x00'), desempaquetado[20:]
+    except TypeError as te:
+        print(f"Error en el desempaquetamiento. {te}")
+        return
+    except Exception as ex:
+        print(f"Error. {ex}")
+        return
+    
 
 def exportar_json(registros:list[tuple]):
     """Exporta los registros a un archivo JSON llamado 'datos.json'."""
-    with open('datos.json','wb') as datos:
-        lista_registros = []
-        for registro in registros:
-            lista_registros.append({
-                "DNI": registro[0],
-                "Nombre": registro[1],
-                "Edad": registro[2],
-                "Email": registro[3]
-            })
-        datos.write(json.dumps(lista_registros, indent=4).encode('utf-8'))
-    utilidades.pulsar_enter_para_continuar("Datos exportados a 'datos.json'. Pulsa Enter para continuar...")
+    try:
+        with open('datos.json','wb') as datos:
+            lista_registros = []
+            for registro in registros:
+                lista_registros.append({
+                    "DNI": registro[0],
+                    "Nombre": registro[1],
+                    "Edad": registro[2],
+                    "Email": registro[3]
+                })
+            datos.write(json.dumps(lista_registros, indent=4).encode('utf-8'))
+        utilidades.pulsar_enter_para_continuar("Datos exportados a 'datos.json'. Pulsa Enter para continuar...")
+    except IOError as ioe:
+        print(f"Error. {ioe}")
+    except PermissionError:
+        print(f"Error. No tiene permisos para crear el archivo.")
+    except Exception as ex:
+        print(f"Error. {ex}")
+
     

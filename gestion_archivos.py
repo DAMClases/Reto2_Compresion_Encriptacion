@@ -112,10 +112,17 @@ def escribir_archivo(data: tuple[str, str, int, str], password: str) -> bool:
 
         del(datos_encriptados)  # Liberamos memoria
         return True
+    except TypeError as te:
+        print(f"Error con los tipos de datos introducidos. {te}")
+    # except Exception as e:
+    #     print(f"Error al escribir el archivo: {e}")
+    #     return False
+    except AttributeError as ae:
+        print(f"importación circular: {ae}")
+    except ValueError as ve:
+        print(f"ErrorA. {ve}")
 
-    except Exception as e:
-        print(f"Error al escribir el archivo: {e}")
-        return False
+# escribir_archivo((2,'hola', 'hola', 2), 'AHAHA')
 
 def escribir_datos_usuario(user: str, password: str) -> bool:
     """Escribe los datos encriptados del usuario en un archivo cifrado usando la contraseña introducida por el usuario como llave.
