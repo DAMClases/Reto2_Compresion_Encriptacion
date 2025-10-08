@@ -39,8 +39,23 @@ comprimirse antes de almacenarlos.
 
 ● Implementar una funcionalidad para exportar los datos desencriptados a un archivo de texto o JSON.
 
+# Instalación de las librerías
 
 
+## Instalación de la librería cryptography
+
+En una terminal cmd (Windows) o en la propia terminal de Visual Studio Code ejecutamos el siguiente comando:
+
+```
+pip install cryptography
+```
+## Instalación de la librería colorama
+
+En una terminal cmd (Windows) o en la propia terminal de Visual Studio Code ejecutamos el siguiente comando:
+
+```
+pip install colorama
+```
 
 # Descripción técnica del programa
 
@@ -294,20 +309,4 @@ Seleccione una opción (1-5) >>> 5
 
 Finalizando sesión... ¡Hasta pronto!
 ```
-# Instalación de las librerías
 
-
-## Instalación de la librería cryptography
-
-En una terminal cmd (Windows) o en la propia terminal de Visual Studio Code ejecutamos el siguiente comando:
-
-```
-pip install cryptography
-```
-## Instalación de la librería colorama
-
-En una terminal cmd (Windows) o en la propia terminal de Visual Studio Code ejecutamos el siguiente comando:
-
-```
-pip install colorama
-```
