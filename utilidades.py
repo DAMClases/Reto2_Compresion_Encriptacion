@@ -7,7 +7,7 @@ init(autoreset=True)
 COLOR_LETRA_CYAN = Fore.CYAN
 COLOR_LETRA_AMARILLO = Fore.YELLOW
 
-def pulsar_enter_para_continuar(mensaje = '', tipo = 'normal'):
+def pulsar_enter_para_continuar(mensaje:str = '', tipo:str = 'normal') -> None:
     '''Función que recibe un mensaje personalizado y un tipo de mensaje. 
     Dependiendo del tipo de mensaje hay una gama de colores que definen:
     Blanco: Mensaje normal - exitoso
@@ -33,7 +33,7 @@ def pulsar_enter_para_continuar(mensaje = '', tipo = 'normal'):
     except KeyboardInterrupt:
         pass
 
-def limpiar_consola():
+def limpiar_consola() -> None:
     '''Función para limpiar consola.'''
     os.system("cls" if os.name == 'nt' else "clear")
 
@@ -187,7 +187,7 @@ def validar_correo(email:str)->bool:
     except Exception as ex:
         print(f"Error. {ex}")
 
-def buscar_registro_especificado(estructura_datos:list[tuple[str,str,int,str]], dni:str)->None:
+def buscar_registro_especificado(estructura_datos:list[tuple[str,str,int,str]], dni:str) -> None:
     """Función que recibe como parámetro una estructura de datos y un dni previamente validado permite
     recorrer la estructura en busca de una coincidencia con el parámetro del dni. Si la encuentra, devuelve
     el registro exacto (tupla)."""
@@ -198,8 +198,6 @@ def buscar_registro_especificado(estructura_datos:list[tuple[str,str,int,str]], 
         return None
     except Exception as ex:
         print(f"Error. {ex}")
-
-
 
 def mostrar_registros(registros:tuple) -> None:
     """Muestra los registros introducidos en formato tabla"""
@@ -221,7 +219,4 @@ def mostrar_registros(registros:tuple) -> None:
     print("+" + "-"* (max_dni_length +2) + "+" + "-"*(max_nombre_length +2) + "+" + "-"*(max_digitos_edad +2) + "+" + "-"*(max_correo_length +2) + "+")
     for registro in registros:
         print(f"| {registro[0].rjust(max_dni_length)} | {registro[1]:<{max_nombre_length}} | {registro[2]:>{max_digitos_edad}} | {registro[3]:<{max_correo_length}} |")
-    
     print("+" + "-"* (max_dni_length +2) + "+" + "-"*(max_nombre_length +2) + "+" + "-"*(max_digitos_edad +2) + "+" + "-"*(max_correo_length +2) + "+")
-    
-    

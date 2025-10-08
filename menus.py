@@ -13,6 +13,7 @@ import gestion_archivos
 #para el apartado gráfico debemos inicializar siempre colorama
 init(autoreset=True)
 key = ""
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
 #  Constantes que intervienen en el diseño de la aplicación #
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
@@ -28,6 +29,7 @@ COLOR_TEXTO_MAGENTA = Fore.MAGENTA
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
 #                       Funciones                           #
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - ###
+
 def introducir_campo(campo:str, input_sistema:str, actualizando:bool = False)-> str | int | None:
     '''Función que recoge y valida la entrada de datos del usuario.'''
     while True:
@@ -131,6 +133,7 @@ def mostrar_menu_crear_registro()->None:
     '''Función que mediante la entrada de datos de los usuarios y las validaciones pertinentes se crea un nuevo registro.''' 
     utilidades.limpiar_consola()
     print(COLOR_TEXTO_AMARILLO + "Opción actual: crear registro")   
+    
     dni = introducir_campo("DNI", "Introduzca un DNI válido (Ej: 21137083Z) >>> ")
     if dni is None:
         utilidades.pulsar_enter_para_continuar("Operación cancelada.", 'normal')
@@ -328,9 +331,7 @@ def mostrar_menu_eliminar_registro()->None:
                         utilidades.pulsar_enter_para_continuar("Tecla incorrecta.", "advertencia")
                         utilidades.limpiar_consola()
                         continue
-
         utilidades.pulsar_enter_para_continuar("El registro no se ha encontrado.", "advertencia")
-
     utilidades.pulsar_enter_para_continuar("No existe estructura de datos.", "error")
 
 

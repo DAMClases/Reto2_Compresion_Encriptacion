@@ -41,7 +41,7 @@ def generar_key(password: str, salt: bytes) -> bytes:
     except Exception as ex:
         print(f"Error. {ex}")
         return
-# generar_key(2, True)
+    
 # ------------------------
 # Empaquetado de registros
 # ------------------------
@@ -68,6 +68,7 @@ def desempaquetar_registro(record_bytes: bytes) -> tuple[str, str, int, str]:
     try:
         id_b, name_b, age, email_b = struct.unpack(CONFIGURACION_PAQUETES, record_bytes)
         return (
+            # Se decodifica y se eliminan los bytes nulos de relleno
             id_b.decode('utf-8').rstrip('\x00'),
             name_b.decode('utf-8').rstrip('\x00'),
             age,
