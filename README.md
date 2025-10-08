@@ -1,13 +1,3 @@
-# Reto_2_Compresion_Encriptacion
-Programa que gestiona un archivo binario de forma segura utilizando compresión y encriptación
-
-
-*AÑADIR DESCRIPCION DEL PROGRAMA Y TECNOLOGIA, LIBRERIAS ETC*
-
-# Descripción técnica del programa
-
-lorem ipsum....
-
 # Reto 2 - Alberto, Cristopher, Jerónimo
 ## Ficheros Binarios con Compresión y Encriptación: Gestión Segura de Archivos
 **Descripción:** El grupo debe desarrollar un programa que gestione un archivo binario de forma segura utilizando compresión y encriptación. El objetivo es manejar datos sensibles (por ejemplo, información personal o empresarial), asegurándose de que la información esté comprimida y encriptada cuando se almacene, y se pueda descomprimir y desencriptar al leerla.
