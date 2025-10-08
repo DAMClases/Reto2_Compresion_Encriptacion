@@ -58,7 +58,12 @@ pip install colorama
 ```
 
 # Descripción técnica del programa
+## Ejecución del programa
 
+Para ejecutar el programa se ejecuta en la consola el siguiente comando:
+```
+python main.py
+```
 El programa permite al usuario almacenar datos de forma encriptada y comprimida utilizando las librerías cryptography y zlib. El programa se compone principalmente de dos menús:
 
 ### Menu de login
