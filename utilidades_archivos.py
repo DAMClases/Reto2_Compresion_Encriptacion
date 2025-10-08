@@ -18,14 +18,24 @@ SALT_BYTES = 16
 ITERACIONES = 200_000
 
 def generar_key(password: str, salt: bytes) -> bytes:
-    """Deriva una clave Fernet (base64 urlsafe) a partir de password+salt."""
+    """Esta función deriva una clave criptográfica a partir de una contraseña y una sal (salt) usando PBKDF2-HMAC-SHA256.
+    Luego la codifica en un formato adecuado para usar con Fernet (un sistema de cifrado simétrico)"""
+
+    # La mejor explicación la puedo sacar de la documentación en sí:
+    # The PBKDF2HMAC() function derives a key from a password using a salt and iteration count as specified in RFC 2898.ç
+    # Increasing the iter parameter slows down the algorithm which makes it harder for an attacker to perform a brute force attack using a large number of candidate passwords.
+    # This function makes no assumption regarding the given password. It will be treated as a byte sequence.
+
+    # https://docs.rocketsoftware.com/es-ES/bundle/unidataunibasiccommands_rg_824/page/vmn1685024690247.html
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
         iterations=ITERACIONES,
     )
+    # Por tanto, con esta derivamos la clave con el password (codificado a bytes)
     key = kdf.derive(password.encode('utf-8'))
+    # Y devolvemos la clave en formato base64 urlsafe
     return base64.urlsafe_b64encode(key)
 
 # ------------------------
@@ -71,6 +81,7 @@ def desempaquetar_registro(record_bytes: bytes) -> tuple[str, str, int, str]:
 # ------------
 
 def comprimir_bytes(input_bytes: bytes) -> bytes:
+    """Comprime los bytes introducidos con zlib y los devuelve."""
     try:
         if not isinstance(input_bytes, bytes) or not input_bytes:
             raise ValueError("Los datos a comprimir deben ser bytes y no vacíos.")
@@ -80,7 +91,7 @@ def comprimir_bytes(input_bytes: bytes) -> bytes:
         return None
 
 def descomprimir_bytes(input_bytes: bytes) -> bytes:
-    """Descomprime bytes con zlib."""
+    """Descomprime bytes con zlib y los devuelve."""
     try:
         if not isinstance(input_bytes, bytes) or not input_bytes:
             raise ValueError("Los datos a descomprimir deben ser bytes y no vacíos.")
@@ -128,6 +139,9 @@ def desencriptar_bytes(input_bytes: bytes, password: str) -> bytes:
     except InvalidToken:
         print("Contraseña incorrecta o datos corruptos")
         return None
+    except ValueError as ve:
+        print(f"Error de valor desencriptando: {ve}")
+        return None
     except Exception as e:
         print(f"Error al desencriptar: {e}")
         return None
@@ -137,18 +151,22 @@ def desencriptar_bytes(input_bytes: bytes, password: str) -> bytes:
 # -----------------------------
 
 def record_size() -> int:
+    """Devuelve el tamaño fijo en bytes de cada registro empaquetado."""
     return TAMAÑO_REGISTRO
 
 
 def encriptar_user_data(user:str, contrasena:str) -> bytes:
+    """Encripta los datos del usuario (nombre de usuario y clave de cifrado) con la contraseña introducida."""
     key = Fernet.generate_key()
     return encriptar_bytes(struct.pack('20s', user.encode("utf-8"))+ key, contrasena)
 
 def desencriptar_user_data(byts: bytes, password) -> str:
+    """Desencripta los datos del usuario, devuelve (usuario, clave) o None si falla."""
     desempaquetado = desencriptar_bytes(byts, password)
     return struct.unpack('20s', desempaquetado[:20])[0].decode("utf-8").rstrip('\x00'), desempaquetado[20:]
 
 def exportar_json(registros:list[tuple]):
+    """Exporta los registros a un archivo JSON llamado 'datos.json'."""
     with open('datos.json','wb') as datos:
         lista_registros = []
         for registro in registros:
