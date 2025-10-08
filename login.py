@@ -18,15 +18,20 @@ def login() -> str | None:
     Si el archivo de datos del usuario no existe, lo crea con los datos introducidos.
     Si existe, verifica las credenciales y devuelve la clave de cifrado si son correctas.
     Devuelve None si el usuario cancela la operación o si las credenciales son incorrectas"""
-    print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + "═" * 50)
-    print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + f"{' Iniciar Sesión ':^50}")#centramos en 50 caracteres de ancho
-    print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + "═" * 50 + Style.RESET_ALL)
-    print()
+
     while True:
-        # Entrada de usuario y contraseña
         utilidades.limpiar_consola()
+        # Entrada de usuario y contraseña
         if not os.path.exists(USER_DATA_PATH):
-            print(COLOR_TEXTO_CIAN + "No se han encontrado datos de usuario. Se procederá a crear una nueva cuenta." + Style.RESET_ALL)
+            print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + "═" * 50)
+            print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + f"{' Crear Usuario ':^50}")#centramos en 50 caracteres de ancho
+            print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + "═" * 50 + Style.RESET_ALL)
+            print()
+        else:
+            print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + "═" * 50)
+            print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + f"{' Iniciar Sesión ':^50}")#centramos en 50 caracteres de ancho
+            print(COLOR_FONDO_AZUL + COLOR_TEXTO_BLANCO + "═" * 50 + Style.RESET_ALL)
+            print()
         print("Por favor, introduce tus credenciales." + COLOR_TEXTO_VERDE + "(Ctrl+C para cancelar)" + Style.RESET_ALL)
         try:
             user_input = input(COLOR_TEXTO_AMARILLO + "Introduce tu usuario: " )
