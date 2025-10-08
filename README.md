@@ -64,6 +64,24 @@ El menú de login permite crear un solo usuario con una contraseña en la primer
 
 **A tener en cuenta**: Los registros de los archivos están asociados a la clave de la contraseña, ya que se usa para desencriptar los datos posteriormente, para ello consiguiendo la clave de descifrado.
 
+La primera vez que se accede al programa aparecerá una pantalla como esta:
+
+```
+══════════════════════════════════════════════════
+                  Crear Usuario
+══════════════════════════════════════════════════
+
+Por favor, introduce tus credenciales.(Ctrl+C para cancelar)
+Introduce tu usuario: 
+Introduce tu contraseña: 
+```
+Si introduces tus credenciales (admite vacío o ENTER), te saldrá esta pantalla:
+
+```
+Cuenta creada exitosamente. Por favor, inicia sesión.
+Pulse enter para continuar...
+```
+
 ```
 ══════════════════════════════════════════════════
                   Iniciar Sesión                  
@@ -77,7 +95,21 @@ El menu de login da paso al menu principal y sus funcionalidades, que será el m
 
 ### Menu principal
 
-El menú principal que contiene las diferentes opciones a elegir.
+El menú principal que contiene las diferentes opciones a elegir. La primera vez que el usuario accede y **_NO TIENE NINGÚN REGISTRO_** aparecerá la siguiente pantalla:
+
+```
+══════════════════════════════════════════════════
+                  MENÚ PRINCIPAL
+══════════════════════════════════════════════════
+
+ [1] ➤ Crear registro
+ [5] ➤ Finalizar sesión
+
+══════════════════════════════════════════════════
+
+Seleccione una opción (1-5) >>> 
+```
+En caso contrario, el menú se verá siempre así:
 
 ```
 ══════════════════════════════════════════════════
@@ -150,7 +182,130 @@ Si se utiliza en otras ocasiones, la secuencia final consiste en el siguiente al
 Si existe: lee → descifra → descomprime → añade → recomprime → cifra → sobrescribe.
 
 <b>Nota:</b> Se puede cancelar la operación en todo momento pulsando <b>CTRL-B.</b>
+
+### 2. Leer registro(s)
+
+La secuencia para leer un registro comienza de la siguiente manera:
+```
+Opción actual: leer registro(s)
+ [1] ➤ Leer todos los registros
+ [2] ➤ Leer registro específico
+Seleccione la opción pertinente >>> 
+```
+1. El usuario visualiza un submenú donde puede elegir entre:
+    1. Elegir todos los registros.
+    2. Leer registro específico.
+2. Si el usuario elige leer todos los registros, se carga la estructura, se desencripta, se descomprime y se recorren los bytes en cada chunk de 162 bytes y se desempaquetan. Se crea una lista de tuplas con los datos desempaquetados y se muestra en pantalla todos los registros encontrados. Opcionalmente el usuario puede volcar los datos mostrados en un fichero JSON. Si lo hace, se genera un fichero con los datos.
+De cualquier otra manera, se devuelve al menú principal.
+```
+Mostrando los registros actuales encontrados
++-----------+-------------------+------+------------------------+
+|    DNI    |       Nombre      | Edad |   Correo electrónico   |
++-----------+-------------------+------+------------------------+
+| 79197910D | Veronica          |   25 | ronnieglez99@gmail.com |
+| 21137083Z | Cristopher Tester |   25 | cristotester@gmail.com |
++-----------+-------------------+------+------------------------+
+
+¿Desea exportar los datos a formato JSON? [S]|[N] >>> 
+```
+3. Si el usuario elige la opción de visualizar un registro específico, deberá introducir un DNI previamente registrado y validado.
+Se carga la estructura, se desencripta, se descomprime y se recorren los bytes en cada chunk de 162 bytes buscando coincidencia con el DNI. Si coincide, se muestra en pantalla el registro especificado    . Opcionalmente el usuario puede volcar los datos mostrados en un fichero JSON. Si lo hace, se genera un fichero con los datos.
+De cualquier otra manera, se devuelve al menú principal.
+
+```
+Introduzca un DNI válido (Ej: 21137083Z) >>> 21137083Z
+//REFRESCAMIENTO DE PANTALLA
+
+Mostrando los registros actuales encontrados
++-----------+-------------------+------+------------------------+
+|    DNI    |       Nombre      | Edad |   Correo electrónico   |
++-----------+-------------------+------+------------------------+
+| 21137083Z | Cristopher Tester |   25 | cristotester@gmail.com |
++-----------+-------------------+------+------------------------+
+
+¿Desea exportar los datos a formato JSON? [S]|[N] >>> S
+Datos exportados a 'datos.json'. Pulsa Enter para continuar...
+Pulse enter para continuar...
+```
+### 3. Modificar registro
+
+El usuario cuando accede a esta funcionalidad puede cambiar un registro especificado. 
+
+```
+Opción actual: modificar registro
+Introduzca un DNI válido (Ej: 21137083Z) >>> 21137083Z
+```
+
+La secuencia para modificar es la siguiente:
+
+1. Se visualizan los datos si existen. A continuación el usuario puede elegir entre:
+    1. Opción 1: Pulsar ENTER en cada campo o en campos específicos y dejar los campos como estaban.
+    2. Opción 2: Rellenar los campos.
+
+2. Si no existen, devuelve error.
+
+```
+Mostrando los registros actuales encontrados
++-----------+-------------------+------+------------------------+
+|    DNI    |       Nombre      | Edad |   Correo electrónico   |
++-----------+-------------------+------+------------------------+
+| 21137083Z | Cristopher Tester |   25 | cristotester@gmail.com |
++-----------+-------------------+------+------------------------+
+Se ha encontrado el registro.
+Instrucciones: 
+[1]. Pulse ENTER para dejar el valor actual sin modificar. 
+[2]. Introduzca nuevas opciones y pulse ENTER para continuar con o
+```
+Una secuencia válida puede ser la siguiente:
+```
+Introduzca un nuevo nombre >>> Jero Testing
+Introduzca una nueva edad acotada entre 1-99 años >>> 35
+Introduzca un nuevo email válido (Ej: jero@gmail.com / alberto@outlook.es) >>> jero@gmail.com
+Registro modificado correctamente.
+Pulse enter para continuar...
+```
+Se crea un buffer de registro con los nuevos datos. De esta manera se recorre todo el fichero y se busca el registro coincidente con el DNI introducido. Al encontrarse, se sobreescribe el chunk coincidente con el registro almacenado. El fichero se sobreescribe finalmente reposicionando los registros. Finalmente se vuele a encriptar y comprimir.
+### 4. Eliminar registro
+
+El usuario cuando accede a esta funcionalidad puede eliminar un registro especificado por un DNI introducido.
+
+Esta es la pantalla que le aparede: 
+
+```
+Opción actual: eliminar registro
+Introduzca un DNI válido (Ej: 21137083Z) >>> 
+```
+
+Si lo encuentra, aparecerá esta pantalla:
+
+```
+Mostrando los registros actuales encontrados
++-----------+--------------+------+--------------------+
+|    DNI    |    Nombre    | Edad | Correo electrónico |
++-----------+--------------+------+--------------------+
+| 21137083Z | Jero Testing |   35 | jero@gmail.com     |
++-----------+--------------+------+--------------------+
+¿Desea eliminar el registro? [S]|[N] >>> 
+```
+
+El usuario decide si elimina o no el registro. Si lo hace, la secuencia es la siguiente: 
+
+Se crea un buffer de registro nuevo cuya edad se settea en -1. De esta manera se recorre todo el fichero y se busca el registro coincidente con el DNI introducido. Al encontrarse, se comprueba el registro nuevo si es -1. Por tanto se borra el chunk del registro almacenado. El fichero se sobreescribe finalmente reposicionando los registros. Finalmente se vuele a encriptar y comprimir. 
+```
+Registro eliminado correctamente.
+Pulse enter para continuar...
+```
+### 5. Finalizar sesión
+
+El usuario termina su sesión y sale del programa.
+
+```
+Seleccione una opción (1-5) >>> 5
+
+Finalizando sesión... ¡Hasta pronto!
+```
 # Instalación de las librerías
+
 
 ## Instalación de la librería cryptography
 
